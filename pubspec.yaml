@@ -17,7 +17,10 @@ dependencies:
     sdk: flutter
   firebase_core: ^0.3.0  # dependency for FireBase Core
   firebase_analytics: ^2.0.0  # dependency for Google Analytics for FireBase
-#  firebase_auth: ^0.8.0  # FireBase authentication
+  # FireBase authentication
+  google_sign_in: ^4.0.0
+  firebase_auth: ^0.8.0+1
+
 #  firebase_database: ^2.0.0 # FireBase real time database
 #  firebase_storage: ^2.0.0 # FireBase Cloud Storage
 
