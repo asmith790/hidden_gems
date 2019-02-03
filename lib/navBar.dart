@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
+import 'post.dart';
 import 'main.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -38,6 +39,16 @@ class MyDrawer extends StatelessWidget {
                 // ...
                 // Then close the drawer
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: Text('Post View //Testing'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(builder: (context) => new Post()),
+                );
+                //Navigator.pop(context);
               },
             ),
             ListTile(
