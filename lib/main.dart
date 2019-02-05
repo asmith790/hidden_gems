@@ -1,20 +1,32 @@
+// https://flutter.io/docs/cookbook/design/drawer
 import 'package:flutter/material.dart';
+import 'navBar.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+//  final appTitle = 'Hidden Gems';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Welcome to Flutter',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Welcome to Flutter'),
-        ),
-        body: Center(
-          child: Text('Hello World'),
-        ),
-      ),
+      title: 'Hidden Gems',
+      home: MyHomePage(title: 'Hidden Gems'),
+    );
+  }
+}
+
+class MyHomePage extends StatelessWidget {
+  final String title;
+
+  MyHomePage({Key key, this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Hidden Gems')),
+      body: Center(child: Text('My Page!')),
+      drawer: MyDrawer(),
     );
   }
 }
