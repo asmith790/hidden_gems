@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'navBar.dart';
 
-class Post extends StatelessWidget {
+class CustomForm extends StatefulWidget {
   @override
+  Post createState() => Post();
+}
+class Post extends State<CustomForm> {
+  @override
+  final myController = TextEditingController();
   Widget build(BuildContext context) {
     return new Scaffold(
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(title: Text('Hidden Gems')),
-      body: Column(
+      body: ListView(
         children: <Widget>[
           IntrinsicHeight(
             child: Row(
@@ -21,35 +27,81 @@ class Post extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Text('Distance Away'),
+              new Flexible(
+                child: new TextField(
+                  decoration: const InputDecoration(helperText: "Name"),
+                  style: Theme.of(context).textTheme.body1,
+                ),
+              ),
             ],
           ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('Name'),
-                Text('Description'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('Tags'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('Author'),
-                Text('Rating'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('Post Count'),
-              ],
-            )
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              new Flexible(
+                child: new TextField(
+                  decoration: const InputDecoration(helperText: "Description"),
+                  style: Theme.of(context).textTheme.body1,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              new Flexible(
+                child: new TextField(
+                  decoration: const InputDecoration(helperText: "Tags"),
+                  style: Theme.of(context).textTheme.body1,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              new Flexible(
+                child: new TextField(
+                  decoration: const InputDecoration(helperText: "Author"),
+                  style: Theme.of(context).textTheme.body1,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              new Flexible(
+                child: new TextField(
+                  decoration: const InputDecoration(helperText: "Rating"),
+                  style: Theme.of(context).textTheme.body1,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              new Flexible(
+                child: new TextField(
+                  decoration: const InputDecoration(helperText: "Post Count"),
+                  style: Theme.of(context).textTheme.body1,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              new RaisedButton(
+                padding: const EdgeInsets.all(8.0),
+                textColor: Colors.white,
+                color: Colors.blue,
+                //onPressed: addNumbers, call on function when pressed
+                child: new Text("Add a Gem"),
+              ),
+            ],
+          )
         ],
       ),
       drawer: MyDrawer(),
