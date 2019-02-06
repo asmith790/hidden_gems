@@ -40,6 +40,11 @@ build/
 # Firebase config file
 **/android/app/google-services.json
 
+# Google Map Api key
+**/android/app/src/main/AndroidManifest.xml
+**/ios/Runner/AppDelegate.m
+**/ios/Runner/main.m
+
 # iOS/XCode related
 **/ios/**/*.mode1v3
 **/ios/**/*.mode2v3
