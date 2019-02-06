@@ -43,7 +43,7 @@ build/
 # Google Map Api key
 **/android/app/src/main/AndroidManifest.xml
 **/ios/Runner/AppDelegate.m
-**/ios/Runner/main.m
+**/ios/Runner/Info.plist
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
