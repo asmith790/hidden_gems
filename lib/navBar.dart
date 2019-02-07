@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'profile.dart';
 import 'post.dart';
 import 'main.dart';
+import 'listView.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -26,10 +27,11 @@ class MyDrawer extends StatelessWidget {
             ListTile(
               title: Text('List View'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(builder: (context) => new listView()),
+                );
+//                Navigator.pop(context);
               },
             ),
             ListTile(
