@@ -46,7 +46,7 @@ class MyDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (context) => new Post()),
+                  new MaterialPageRoute(builder: (context) => new CustomForm()),
                 );
                 //Navigator.pop(context);
               },
