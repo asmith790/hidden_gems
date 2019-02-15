@@ -1,8 +1,4 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'navBar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'gem.dart';
 import 'firebase_firestore_service.dart';
 
 
