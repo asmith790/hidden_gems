@@ -17,10 +17,50 @@ class listView extends StatelessWidget {
             default:
               return new ListView(
                 children:
-                  snapshot.data.documents.map((DocumentSnapshot document) {
+                    snapshot.data.documents.map((DocumentSnapshot document) {
                   return new ListTile(
-                    title: new Text(document['name']),
-                    subtitle: new Text(document['description']),
+                    title: new Text(
+                      document['name'],
+                      style: TextStyle(
+                        fontSize: 22.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
+                    subtitle: new Row(children: <Widget>[
+                      new Text.rich(
+                        TextSpan(
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: document['description'],
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                )),
+                            TextSpan(
+                                text: '\ndistance here',
+                                style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: 18.0)),
+                            TextSpan(
+                                text: '\n${document['tags'].toString()}',
+                                style: TextStyle(
+                                    fontSize: 18.0,
+                                fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ]),
+                    isThreeLine: true,
+                    leading: Column(
+                      children: <Widget>[
+                        Image.asset(
+                          //Would become a photo
+                          'assets/gem.png',
+                          width: 70.0,
+                          height: 45,
+                        ),
+                      ],
+                    ),
                   );
                 }).toList(),
               );
@@ -29,6 +69,5 @@ class listView extends StatelessWidget {
       ),
       drawer: MyDrawer(),
     );
-
   }
 }
