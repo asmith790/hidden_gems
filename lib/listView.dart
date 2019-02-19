@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navBar.dart';
+import 'post.dart';
+
 
 class listView extends StatelessWidget {
   @override
@@ -61,6 +63,14 @@ class listView extends StatelessWidget {
                         ),
                       ],
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        new MaterialPageRoute(builder: (context) => new Post()),
+                        /*Todo: pass the post Id so I can get post data for the right post*/
+                      );
+                      //Navigator.pop(context);
+                    },
                   );
                 }).toList(),
               );
