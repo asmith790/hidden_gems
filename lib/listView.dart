@@ -10,7 +10,7 @@ class listView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Hidden Gems')),
       body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('posts').snapshots(),
+        stream: Firestore.instance.collection('posts').where("finished", isEqualTo: true).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) return new Text('${snapshot.error}');
           switch (snapshot.connectionState) {
@@ -66,8 +66,7 @@ class listView extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        new MaterialPageRoute(builder: (context) => new Post()),
-                        /*Todo: pass the post Id so I can get post data for the right post*/
+                        new MaterialPageRoute(builder: (context) => new Post(id: document.documentID)),
                       );
                       //Navigator.pop(context);
                     },
