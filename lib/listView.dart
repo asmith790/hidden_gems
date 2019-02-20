@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navBar.dart';
-import 'post.dart';
+import 'test.dart';
 
 
 class listView extends StatelessWidget {
@@ -66,7 +66,7 @@ class listView extends StatelessWidget {
                     onTap: () {
                       Navigator.push(
                         context,
-                        new MaterialPageRoute(builder: (context) => new Post(id: document.documentID)),
+                        new MaterialPageRoute(builder: (context) => new test(id: document.documentID)),
                       );
                       //Navigator.pop(context);
                     },
