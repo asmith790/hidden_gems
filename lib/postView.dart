@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navBar.dart';
-import 'Listing.dart';
 import 'post.dart';
-//I think the counter alone needs to be in a stateful widget and that is in a
-//parent widget with the other stuff that is stateless. So only the counter changes.
-class test extends StatelessWidget {
+import 'voteTracker.dart';
+
+class PostView extends StatelessWidget {
   final String id;
-  test({this.id});
+  PostView({this.id});
   int count;
-  List<Listing> posts;
+  List<Post> posts;
 
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -29,7 +28,7 @@ class test extends StatelessWidget {
                   return new Center(child: new CircularProgressIndicator());
                 default:
                   posts = snapshot.data.documents
-                      .map((document) => new Listing(
+                      .map((document) => new Post(
                       description: document["description"],
                       name: document["name"],
                       tags: document["tags"].toString(),
@@ -37,7 +36,6 @@ class test extends StatelessWidget {
                       downvotes: document["rating"][0],
                       userid: document["userid"]))
                       .toList();
-                  count = posts[0].upvotes - posts[0].downvotes;
                   return new Column(
                     mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
@@ -87,12 +85,12 @@ class test extends StatelessWidget {
                           Text(posts[0].userid),
                         ],
                       ),
+                      VoteTracker(count: posts[0].upvotes - posts[0].downvotes),
                     ],
                   );
               }
             },
           ),
-          Post(count: count),
         ],
       ),
       ),
