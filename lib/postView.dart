@@ -34,7 +34,9 @@ class PostView extends StatelessWidget {
                       tags: document["tags"].toString(),
                       upvotes: document["rating"][1],
                       downvotes: document["rating"][0],
-                      userid: document["userid"]))
+                      userid: document["userid"],
+                      imgUrl: document["picture"],
+                  ))
                       .toList();
                   return new Column(
                     mainAxisSize: MainAxisSize.max,
@@ -43,8 +45,8 @@ class PostView extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
-                            Image.asset(
-                              'assets/map.png',
+                            Image.network(
+                              posts[0].imgUrl,
                               width: MediaQuery.of(context).size.width,
                               height: 240,
                             ), //To be replaced with google map/photo of gem

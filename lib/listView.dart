@@ -5,6 +5,22 @@ import 'postView.dart';
 
 
 class listView extends StatelessWidget {
+
+  Image getPicture(String url){
+    if(url == ""){
+      return Image.asset(
+        //Would become a photo
+        'assets/gem.png',
+        width: 70.0,
+        height: 45,
+      );
+    }
+    return Image.network(
+      //Would become a photo
+      url,
+      width: 76.0,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,12 +71,7 @@ class listView extends StatelessWidget {
                     isThreeLine: true,
                     leading: Column(
                       children: <Widget>[
-                        Image.asset(
-                          //Would become a photo
-                          'assets/gem.png',
-                          width: 70.0,
-                          height: 45,
-                        ),
+                      getPicture(document['picture']),
                       ],
                     ),
                     onTap: () {

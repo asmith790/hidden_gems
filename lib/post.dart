@@ -6,6 +6,7 @@ class Post{
      num upvotes;
      num downvotes;
      String userid;
+     String imgUrl;
 
-     Post({this.description,this.name,this.tags,this.downvotes,this.upvotes,this.userid})
+     Post({this.description,this.name,this.tags,this.downvotes,this.upvotes,this.userid, this.imgUrl})
      {}}
