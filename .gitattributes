@@ -1,0 +1,7 @@
+# Files that are going to be encrypted
+**/ios/Runner/AppDelegate.m filter=git-crypt diff=git-crypt
+**/android/app/src/main/AndroidManifest.xml filter=git-crypt diff=git-crypt
+**/android/app/google-services.json filter=git-crypt diff=git-crypt
+
+# Making sure that .gitattributes is never encrypted. DON'T TOUCH THAT LINE BELOW
+.gitattributes !filter !diff
