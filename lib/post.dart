@@ -15,7 +15,7 @@ class Post extends State<CustomForm> {
 
   @override
   void dispose() {
-    // Clean up the controller when the Widget is disposed
+    // Clean up the controller when the Widget is disposeed
     _nameController.dispose();
     _descriptionController.dispose();
     _tagsController.dispose();
