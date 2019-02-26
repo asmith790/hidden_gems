@@ -4,6 +4,7 @@ import 'voteTracker.dart';
 import 'main.dart';
 import 'mapview.dart';
 import 'listView.dart';
+import 'newPost.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -52,21 +53,21 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Post View //Testing'),
-            onTap: () {
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new VoteTracker()),
-              );
-              //Navigator.pop(context);
-            },
-          ),
-          ListTile(
             title: Text('Profile'),
             onTap: () {
               Navigator.push(
                 context,
                 new MaterialPageRoute(builder: (context) => new Profile()),
+              );
+              //Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: Text('New Post'),
+            onTap: () {
+              Navigator.push(
+                context,
+                new MaterialPageRoute(builder: (context) => new CustomForm()),
               );
               //Navigator.pop(context);
             },

@@ -3,9 +3,9 @@ import 'navBar.dart';
 
 class CustomForm extends StatefulWidget {
   @override
-  Post createState() => Post();
+  NewPost createState() => NewPost();
 }
-class Post extends State<CustomForm> {
+class NewPost extends State<CustomForm> {
   @override
   final myController = TextEditingController();
   Widget build(BuildContext context) {
