@@ -3,7 +3,7 @@ import 'profile.dart';
 import 'voteTracker.dart';
 import 'main.dart';
 import 'mapview.dart';
-import 'listview.dart';
+import 'listView.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
@@ -33,7 +33,7 @@ class MyDrawer extends StatelessWidget {
               // Then close the drawer
               Navigator.push(
                 context,
-                new MaterialPageRoute(builder: (context) => new listview()),
+                new MaterialPageRoute(builder: (context) => new listView()),
               );
               //Navigator.pop(context);
             },
