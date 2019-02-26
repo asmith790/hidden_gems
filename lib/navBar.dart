@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
-import 'post.dart';
+import 'voteTracker.dart';
 import 'main.dart';
 import 'mapview.dart';
 import 'listview.dart';
@@ -33,7 +33,7 @@ class MyDrawer extends StatelessWidget {
               // Then close the drawer
               Navigator.push(
                 context,
-                new MaterialPageRoute(builder: (context) => new ListV()),
+                new MaterialPageRoute(builder: (context) => new listview()),
               );
               //Navigator.pop(context);
             },
@@ -56,7 +56,7 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                new MaterialPageRoute(builder: (context) => new CustomForm()),
+                new MaterialPageRoute(builder: (context) => new VoteTracker()),
               );
               //Navigator.pop(context);
             },
