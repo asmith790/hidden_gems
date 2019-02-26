@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
-import 'post.dart';
+import 'voteTracker.dart';
 import 'main.dart';
+import 'listView.dart';
 
 class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the Drawer if there isn't enough vertical
-        // space to fit everything.
         child: ListView(
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
@@ -26,10 +24,11 @@ class MyDrawer extends StatelessWidget {
             ListTile(
               title: Text('List View'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(builder: (context) => new listView()),
+                );
+//                Navigator.pop(context);
               },
             ),
             ListTile(
@@ -46,7 +45,7 @@ class MyDrawer extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  new MaterialPageRoute(builder: (context) => new Post()),
+                  new MaterialPageRoute(builder: (context) => new VoteTracker()),
                 );
                 //Navigator.pop(context);
               },
