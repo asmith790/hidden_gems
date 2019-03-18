@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
-import 'post.dart';
+import 'newPost.dart';
 import 'main.dart';
 
 class MyDrawer extends StatelessWidget {

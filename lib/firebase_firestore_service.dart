@@ -12,11 +12,11 @@ class FirebaseFirestoreService {
 
   FirebaseFirestoreService.internal();
 
-  Future<Gem> createGem(String name, String description, String tags) async {
+  Future<Gem> createGem(String name, String description, String tags, String gps, String userid, String picture, bool finished) async {
     final TransactionHandler createTransaction = (Transaction tx) async {
       final DocumentSnapshot ds = await tx.get(postsCollection.document());
 
-      final Gem gem = new Gem(ds.documentID, name, description, tags);
+      final Gem gem = new Gem(ds.documentID, name, description, tags, gps, userid, picture, finished);
       final Map<String, dynamic> data = gem.toMap();
 
       await tx.set(ds.reference, data);
