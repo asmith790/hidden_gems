@@ -57,6 +57,7 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
+                // TODO: currently the Profile Page breaks the system
                 new MaterialPageRoute(builder: (context) => new Profile()),
               );
               //Navigator.pop(context);
@@ -77,6 +78,7 @@ class MyDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
+                // TODO: make this actually send to the sign in Page , also need to set global Variable to false after logged out
                 new MaterialPageRoute(builder: (context) => new MyHomePage()),
               );
               //Navigator.pop(context);
