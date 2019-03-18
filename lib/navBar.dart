@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
-import 'voteTracker.dart';
 import 'main.dart';
 import 'mapview.dart';
 import 'listView.dart';
