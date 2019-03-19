@@ -118,6 +118,11 @@ class Post extends State<CustomForm> {
               child: Text('Save as Draft'),
               onPressed: () {
                 finished = false;
+                db.createGem(_nameController.text, _descriptionController.text, _tagsController.text, _gpsController.text, _useridController.text, _pictureController.text, finished).then((_) {
+                  _nameController.clear();
+                  _descriptionController.clear();
+                  _tagsController.clear();
+                });
               },
             ),
           ],
