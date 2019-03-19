@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'loginPage.dart';
 import 'profile.dart';
 import 'voteTracker.dart';
-import 'main.dart';
 import 'mapview.dart';
 import 'listView.dart';
 import 'newPost.dart';
@@ -79,7 +79,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 // TODO: make this actually send to the sign in Page , also need to set global Variable to false after logged out
-                new MaterialPageRoute(builder: (context) => new MyHomePage()),
+                new MaterialPageRoute(builder: (context) => new Login()),
               );
               //Navigator.pop(context);
             },
