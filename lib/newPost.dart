@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'firebase_firestore_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ShowHideTextField extends StatefulWidget {
   @override
@@ -20,9 +24,32 @@ class Post extends State<CustomForm> {
   final _gpsController = TextEditingController();
   final _useridController = TextEditingController();
   final _pictureController = TextEditingController();
+  File image;
+  var imgUrl;
 
   bool _isTextFieldVisible = false;
   bool finished = true;
+
+  Future selectImage() async {
+    var img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      image = img;
+    });
+  }
+
+  uploadGem() async {
+    String imgTitle = _nameController.text + ".jpg"; //Change this to post ID or something
+    final StorageReference firebaseStorRef = FirebaseStorage.instance.ref().child(imgTitle);
+    final StorageUploadTask task = firebaseStorRef.putFile(image);
+
+    var imgUrl = await(await task.onComplete).ref.getDownloadURL();
+
+    db.createGem(_nameController.text, _descriptionController.text, _tagsController.text, _gpsController.text, _useridController.text, imgUrl, finished).then((_) {
+      _nameController.clear();
+      _descriptionController.clear();
+      _tagsController.clear();
+    });
+  }
 
   @override
   void dispose() {
@@ -70,6 +97,16 @@ class Post extends State<CustomForm> {
             ),
             ),
 
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: FloatingActionButton(
+                  onPressed: selectImage,
+                  tooltip: 'Upload Image',
+                  child: new Icon(Icons.add_a_photo)
+              ),
+            ),
+
+
             _isTextFieldVisible ?
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
@@ -97,6 +134,7 @@ class Post extends State<CustomForm> {
               ),
             ): SizedBox(),
 
+
             SizedBox(
               height: 25.0,
             ),
@@ -104,13 +142,7 @@ class Post extends State<CustomForm> {
             Padding(padding: new EdgeInsets.all(5.0)),
             RaisedButton(
               child: Text('Add'),
-              onPressed: () {
-                  db.createGem(_nameController.text, _descriptionController.text, _tagsController.text, _gpsController.text, _useridController.text, _pictureController.text, finished).then((_) {
-                    _nameController.clear();
-                    _descriptionController.clear();
-                    _tagsController.clear();
-                  });
-              },
+              onPressed: uploadGem,
             ),
 
             Padding(padding: new EdgeInsets.all(5.0)),
