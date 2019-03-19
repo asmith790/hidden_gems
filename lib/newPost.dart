@@ -23,6 +23,8 @@ class Post extends State<CustomForm> {
 
   bool _isTextFieldVisible = false;
   bool finished = true;
+  List <String> tags = new List();
+  List <int> rating = new List();
 
   @override
   void dispose() {
@@ -67,6 +69,11 @@ class Post extends State<CustomForm> {
             child: TextField(
               controller: _tagsController,
               decoration: InputDecoration(labelText: 'Tags'),
+              onSubmitted: (text) {
+                setState(() {
+                  tags.add(text);
+                });
+              },
             ),
             ),
 
@@ -105,7 +112,7 @@ class Post extends State<CustomForm> {
             RaisedButton(
               child: Text('Add'),
               onPressed: () {
-                  db.createGem(_nameController.text, _descriptionController.text, _tagsController.text, _gpsController.text, _useridController.text, _pictureController.text, finished).then((_) {
+                  db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, _pictureController.text, finished, rating).then((_) {
                     _nameController.clear();
                     _descriptionController.clear();
                     _tagsController.clear();
@@ -118,7 +125,7 @@ class Post extends State<CustomForm> {
               child: Text('Save as Draft'),
               onPressed: () {
                 finished = false;
-                db.createGem(_nameController.text, _descriptionController.text, _tagsController.text, _gpsController.text, _useridController.text, _pictureController.text, finished).then((_) {
+                db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, _pictureController.text, finished, rating).then((_) {
                   _nameController.clear();
                   _descriptionController.clear();
                   _tagsController.clear();

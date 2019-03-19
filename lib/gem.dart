@@ -3,13 +3,14 @@ class Gem {
   String _name;
   String _description;
   //var _tags = [];
-  String _tags;
+  List <String> _tags;
   String _gps;
   String _userid;
   String _picture;
   bool _finished;
+  List <int> _rating;
 
-  Gem(this._id, this._name, this._description, this._tags, this._gps, this._userid, this._picture, this._finished);
+  Gem(this._id, this._name, this._description, this._tags, this._gps, this._userid, this._picture, this._finished, this._rating);
 
   Gem.map(dynamic obj) {
     this._id = obj['id'];
@@ -20,16 +21,18 @@ class Gem {
     this._userid = obj['userid'];
     this._picture = obj['picture'];
     this._finished = obj['finished'];
+    this._rating = obj['rating'];
   }
 
   String get id => _id;
   String get name => _name;
   String get description => _description;
-  String get tags => _tags;
+  List <String> get tags => _tags;
   String get gps => _gps;
   String get userid => _userid;
   String get picture => _picture;
   bool get finished => _finished;
+  List <int> get rating => _rating;
 
 
   Map<String, dynamic> toMap() {
@@ -44,6 +47,7 @@ class Gem {
     map['userid'] = _userid;
     map['picture'] = _picture;
     map['finished'] = _finished;
+    map['rating'] = _rating;
 
     return map;
   }
@@ -57,5 +61,6 @@ class Gem {
     this._userid = map['userid'];
     this._picture = map['picture'];
     this._finished = map['finished'];
+    this._rating = map['rating'];
   }
 }
