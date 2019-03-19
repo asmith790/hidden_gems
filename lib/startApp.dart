@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'loginPage.dart';
+import 'auth.dart';
 
 class StartApp extends StatelessWidget {
   @override
@@ -7,7 +8,7 @@ class StartApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hidden Gems',
       //Todo: add theme if we want to here
-      home: Login(),
+      home: Login(auth: new Auth()),
     );
   }
 }

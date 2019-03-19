@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'auth.dart';
 
 class Login extends StatefulWidget {
+  Login({this.auth}); // when page is initialized, we get the instance of auth
+  final BaseAuth auth; // our abstract class
+
   @override
   State<StatefulWidget> createState() => new _Login();
-
 }
 
 enum FormType{
@@ -35,13 +37,12 @@ class _Login extends State<Login>{
     if(validateAndSave()){
       try{
         if(_formType == FormType.login){
-          // Try's to sign in with Firebase, if fails, returns an error, else returns a user
-          FirebaseUser user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password);
-          print('SignedIn: ${user.uid}');
+          String userId = await widget.auth.signInWithEmailAndPassword(_email, _password);
+          print('SignedIn: $userId');
 
         }else{
-          FirebaseUser user = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
-          print('Registered User: ${user.uid}');
+          String userId = await widget.auth.createUserWithEmailAndPassword(_email, _password);
+          print('Registered User: $userId');
         }
       }catch(e){
         print('Error: $e');
