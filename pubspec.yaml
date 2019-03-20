@@ -25,6 +25,7 @@ dependencies:
   # FireBase Database - Cloud FireStore
   cloud_firestore: ^0.9.0
   image_picker:
+  uuid:
 
 #  google_maps_flutter: ^0.0.3+3
 
