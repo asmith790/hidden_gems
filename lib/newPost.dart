@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'firebase_firestore_service.dart';
+import 'package:geolocator/geolocator.dart';
 
 class ShowHideTextField extends StatefulWidget {
   @override
@@ -17,7 +18,6 @@ class Post extends State<CustomForm> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _tagsController = TextEditingController();
-  final _gpsController = TextEditingController();
   final _useridController = TextEditingController();
   final _pictureController = TextEditingController();
 
@@ -25,6 +25,8 @@ class Post extends State<CustomForm> {
   bool finished = true;
   List <String> tags = new List();
   List <int> rating = new List();
+  Geolocator geolocator = Geolocator();
+  Position userLocation;
 
   @override
   void dispose() {
@@ -32,12 +34,19 @@ class Post extends State<CustomForm> {
     _nameController.dispose();
     _descriptionController.dispose();
     _tagsController.dispose();
-    _gpsController.dispose();
-    _useridController.dispose();
-    _pictureController.dispose();
     super.dispose();
   }
 
+  Future<Position> locateUser() async {
+    return Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((location) {
+      if (location != null) {
+        print("Location: ${location.latitude},${location.longitude}");
+      }
+      return location;
+    });
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,15 +90,6 @@ class Post extends State<CustomForm> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
-                controller: _gpsController,
-                decoration: InputDecoration(labelText: 'GPS'),
-              ),
-            ): SizedBox(),
-
-            _isTextFieldVisible ?
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
                 controller: _useridController,
                 decoration: InputDecoration(labelText: 'UserId'),
               ),
@@ -112,11 +112,18 @@ class Post extends State<CustomForm> {
             RaisedButton(
               child: Text('Add'),
               onPressed: () {
-                  db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, _pictureController.text, finished, rating).then((_) {
+                locateUser().then((value) {
+                  setState(() {
+                    userLocation = value;
+                  });
+                });
+                finished = true;
+                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude.toString() + " ," + userLocation.latitude.toString() , _useridController.text, _pictureController.text, finished, rating).then((_) {
                     _nameController.clear();
                     _descriptionController.clear();
                     _tagsController.clear();
                   });
+
               },
             ),
 
@@ -124,8 +131,14 @@ class Post extends State<CustomForm> {
             RaisedButton(
               child: Text('Save as Draft'),
               onPressed: () {
+                locateUser().then((value) {
+                  setState(() {
+                    userLocation = value;
+                  });
+                });
+
                 finished = false;
-                db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, _pictureController.text, finished, rating).then((_) {
+                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude.toString() + " , " + userLocation.latitude.toString() , _useridController.text, _pictureController.text, finished, rating).then((_) {
                   _nameController.clear();
                   _descriptionController.clear();
                   _tagsController.clear();
@@ -137,4 +150,5 @@ class Post extends State<CustomForm> {
       ),
     );
   }
+
 }
