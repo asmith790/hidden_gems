@@ -24,21 +24,21 @@ class HomePage extends StatelessWidget{
         title: new Text('Home'),
         actions: <Widget>[
           new FlatButton(
-            child:new Text(
-              'Logout',
-              style: new TextStyle(
-                fontSize: 17.0,
-                color: Colors.white
+              onPressed: _signOut,
+              child: new Text(
+                'Logout',
+                style: new TextStyle(
+                  fontSize: 17.0,
+                  color: Colors.white
+                ),
               )
-            ),
-            onPressed: _signOut,
           )
-        ]
+        ],
       ),
       body: new Text(
         'This is hidden gems'
       ),
-      drawer: new MyDrawer(), // this is the menu bar
+      drawer: MyDrawer(),
     );
   }
 }

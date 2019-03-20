@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'homePage.dart';
+import 'listingPage.dart';
 import 'auth.dart';
 import 'rootPage.dart';
+import 'loginPage.dart';
 
 class StartApp extends StatelessWidget {
   @override
@@ -9,6 +12,12 @@ class StartApp extends StatelessWidget {
       title: 'Hidden Gems',
       //Todo: add theme if we want to here
       home: RootPage(auth: new Auth()),
+      initialRoute: '/',
+      routes: {
+        '/login' : (_) => new Login(),
+        '/listings': (_) => new ListingPage(),
+
+      },
     );
   }
 }

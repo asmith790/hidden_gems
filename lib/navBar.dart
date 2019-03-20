@@ -3,25 +3,16 @@ import 'loginPage.dart';
 import 'profile.dart';
 import 'voteTracker.dart';
 import 'mapview.dart';
-import 'listView.dart';
+import 'listingPage.dart';
 import 'newPost.dart';
 
 import 'homePage.dart';
 import 'auth.dart';
+import 'rootPage.dart';
+
+
 
 class MyDrawer extends StatelessWidget {
-  MyDrawer({this.auth, this.onSignedOut});
-  final BaseAuth auth;
-  final VoidCallback onSignedOut;
-
-  void _signOut() async{
-    try{
-      await auth.signOut();
-      onSignedOut(); // call voidCallback function
-    }catch(e){
-      print(e);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,11 +39,8 @@ class MyDrawer extends StatelessWidget {
               // Update the state of the app
               // ...
               // Then close the drawer
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new HomePage(auth: auth)),
-              );
-              //Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/');
             },
           ),
           ListTile(
@@ -61,57 +49,49 @@ class MyDrawer extends StatelessWidget {
               // Update the state of the app
               // ...
               // Then close the drawer
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new listView()),
-              );
-              //Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/listings');
             },
           ),
+
+
+
+
+
+
+
           ListTile(
             title: Text('Map View'),
             onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 new MaterialPageRoute(builder: (context) => new MapsDemo()),
               );
-              //Navigator.pop(context);
             },
           ),
           ListTile(
             title: Text('Profile'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 // TODO: currently the Profile Page breaks the system
                 new MaterialPageRoute(builder: (context) => new Profile()),
               );
-              //Navigator.pop(context);
             },
           ),
           ListTile(
             title: Text('New Post'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 new MaterialPageRoute(builder: (context) => new CustomForm()),
               );
-              //Navigator.pop(context);
             },
           ),
-          FlatButton(
-            child:new Text(
-                'Logout',
-                style: new TextStyle(
-                    fontSize: 15.0,
-                    color: Colors.black
-                )
-            ),
-            onPressed: _signOut,
-          )
+
         ],
       ),
     );

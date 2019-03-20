@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navBar.dart';
 import 'postView.dart';
+import 'auth.dart';
 
-
-class listView extends StatelessWidget {
+class ListingPage extends StatelessWidget {
+//  ListingPage({this.auth, this.onSignedOut});
+//  final BaseAuth auth;
+//  final VoidCallback onSignedOut;
 
   Image getPicture(String url){
     if(url == ""){

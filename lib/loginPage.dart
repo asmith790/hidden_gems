@@ -28,7 +28,6 @@ class _Login extends State<Login>{
     if(form.validate()){
       form.save(); // save the state of the form
       print('Form is valid'); // print statements for debugging
-//      print('Email: $_email, Password: $_password');
       return true;
     }
     return false;
@@ -75,7 +74,14 @@ class _Login extends State<Login>{
       Scaffold(
         appBar: AppBar(
           title: Text('Login Page'),
+          automaticallyImplyLeading: false,
         ),
+//          floatingActionButton: new FloatingActionButton(
+//            child: new Icon(Icons.fullscreen_exit),
+//            onPressed: () {
+//              Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
+//            },
+//          ),
         body: new Container(
           padding: EdgeInsets.all(16.0),
           child: new Form(
