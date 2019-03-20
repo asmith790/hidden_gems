@@ -6,7 +6,23 @@ import 'mapview.dart';
 import 'listView.dart';
 import 'newPost.dart';
 
+import 'homePage.dart';
+import 'auth.dart';
+
 class MyDrawer extends StatelessWidget {
+  MyDrawer({this.auth, this.onSignedOut});
+  final BaseAuth auth;
+  final VoidCallback onSignedOut;
+
+  void _signOut() async{
+    try{
+      await auth.signOut();
+      onSignedOut(); // call voidCallback function
+    }catch(e){
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -25,6 +41,19 @@ class MyDrawer extends StatelessWidget {
                   color: Colors.pinkAccent
               ),
             ),
+          ),
+          ListTile(
+            title: Text('Home Page'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.push(
+                context,
+                new MaterialPageRoute(builder: (context) => new HomePage(auth: auth)),
+              );
+              //Navigator.pop(context);
+            },
           ),
           ListTile(
             title: Text('List View'),
@@ -73,17 +102,16 @@ class MyDrawer extends StatelessWidget {
               //Navigator.pop(context);
             },
           ),
-          ListTile(
-            title: Text('Logout'),
-            onTap: () {
-              Navigator.push(
-                context,
-                // TODO: make this actually send to the sign in Page , also need to set global Variable to false after logged out
-                new MaterialPageRoute(builder: (context) => new Login()),
-              );
-              //Navigator.pop(context);
-            },
-          ),
+          FlatButton(
+            child:new Text(
+                'Logout',
+                style: new TextStyle(
+                    fontSize: 15.0,
+                    color: Colors.black
+                )
+            ),
+            onPressed: _signOut,
+          )
         ],
       ),
     );

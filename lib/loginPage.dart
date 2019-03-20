@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'auth.dart';
 
 class Login extends StatefulWidget {
-  Login({this.auth}); // when page is initialized, we get the instance of auth
+  Login({this.auth, this.onSignedIn}); // when page is initialized, we get the instance of auth
   final BaseAuth auth; // our abstract class
+  // a voidCallback takes no parameters and returns no parameters
+  final VoidCallback onSignedIn;
 
   @override
   State<StatefulWidget> createState() => new _Login();
@@ -44,6 +46,8 @@ class _Login extends State<Login>{
           String userId = await widget.auth.createUserWithEmailAndPassword(_email, _password);
           print('Registered User: $userId');
         }
+        // after we either sign in or create an account, we want to be signed in
+        widget.onSignedIn(); // ensure the rootPage receives message we are signedIn
       }catch(e){
         print('Error: $e');
       }
