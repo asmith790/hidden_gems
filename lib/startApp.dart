@@ -4,6 +4,8 @@ import 'listingPage.dart';
 import 'auth.dart';
 import 'rootPage.dart';
 import 'loginPage.dart';
+import 'mapview.dart';
+
 
 class StartApp extends StatelessWidget {
   @override
@@ -16,7 +18,7 @@ class StartApp extends StatelessWidget {
       routes: {
         '/login' : (_) => new Login(),
         '/listings': (_) => new ListingPage(),
-
+        '/maps' : (_) => new MapsDemo(),
       },
     );
   }

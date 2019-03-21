@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
-import 'loginPage.dart';
 import 'profile.dart';
 import 'voteTracker.dart';
-import 'mapview.dart';
-import 'listingPage.dart';
 import 'newPost.dart';
-
-import 'homePage.dart';
-import 'auth.dart';
-import 'rootPage.dart';
-
-
 
 class MyDrawer extends StatelessWidget {
 
@@ -53,21 +44,11 @@ class MyDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/listings');
             },
           ),
-
-
-
-
-
-
-
           ListTile(
             title: Text('Map View'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new MapsDemo()),
-              );
+              Navigator.pushNamed(context, '/maps');
             },
           ),
           ListTile(
