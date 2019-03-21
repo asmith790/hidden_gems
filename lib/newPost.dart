@@ -24,7 +24,7 @@ class Post extends State<CustomForm> {
   bool _isTextFieldVisible = false;
   bool finished = true;
   List <String> tags = new List();
-  int rating = 0;
+  int rating = 1;
   Geolocator geolocator = Geolocator();
   Position userLocation;
 
