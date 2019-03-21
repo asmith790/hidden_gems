@@ -12,7 +12,7 @@ class FirebaseFirestoreService {
 
   FirebaseFirestoreService.internal();
 
-  Future<Gem> createGem(String name, String description, List <String> tags, String gps, String userid, String picture, bool finished, List <int> rating) async {
+  Future<Gem> createGem(String name, String description, List <String> tags, String gps, String userid, String picture, bool finished, int rating) async {
     final TransactionHandler createTransaction = (Transaction tx) async {
       final DocumentSnapshot ds = await tx.get(postsCollection.document());
 

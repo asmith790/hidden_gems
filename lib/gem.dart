@@ -8,7 +8,7 @@ class Gem {
   String _userid;
   String _picture;
   bool _finished;
-  List <int> _rating;
+  int _rating;
 
   Gem(this._id, this._name, this._description, this._tags, this._gps, this._userid, this._picture, this._finished, this._rating);
 
@@ -32,7 +32,7 @@ class Gem {
   String get userid => _userid;
   String get picture => _picture;
   bool get finished => _finished;
-  List <int> get rating => _rating;
+  int get rating => _rating;
 
 
   Map<String, dynamic> toMap() {

@@ -32,7 +32,7 @@ class NewPost extends State<CustomForm> {
   bool _isTextFieldVisible = false;
   bool finished = true;
   List <String> tags = new List();
-  List <int> rating = new List();
+  int rating = 1;
 
   Future selectImage() async {
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -58,7 +58,7 @@ class NewPost extends State<CustomForm> {
     }
 
     //Upload Gem to DB
-    db.createGem(_nameController.text, _descriptionController.text, _tagsController.text, _gpsController.text, _useridController.text, imgUrl, finished).then((_) {
+    db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, imgUrl, finished, rating).then((_) {
       _nameController.clear();
       _descriptionController.clear();
       _tagsController.clear();
