@@ -24,7 +24,7 @@ class Post extends State<CustomForm> {
   bool _isTextFieldVisible = false;
   bool finished = true;
   List <String> tags = new List();
-  List <int> rating = new List();
+  int rating = 0;
   Geolocator geolocator = Geolocator();
   Position userLocation;
 
@@ -118,7 +118,7 @@ class Post extends State<CustomForm> {
                   });
                 });
                 finished = true;
-                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude.toString() + " ," + userLocation.latitude.toString() , _useridController.text, _pictureController.text, finished, rating).then((_) {
+                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude, userLocation.latitude, _useridController.text, _pictureController.text, finished, rating).then((_) {
                     _nameController.clear();
                     _descriptionController.clear();
                     _tagsController.clear();
@@ -138,7 +138,7 @@ class Post extends State<CustomForm> {
                 });
 
                 finished = false;
-                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude.toString() + " , " + userLocation.latitude.toString() , _useridController.text, _pictureController.text, finished, rating).then((_) {
+                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude , userLocation.latitude, _useridController.text, _pictureController.text, finished, rating).then((_) {
                   _nameController.clear();
                   _descriptionController.clear();
                   _tagsController.clear();

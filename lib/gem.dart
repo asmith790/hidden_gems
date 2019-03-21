@@ -4,20 +4,22 @@ class Gem {
   String _description;
   //var _tags = [];
   List <String> _tags;
-  String _gps;
+  double _longitude;
+  double _latitude;
   String _userid;
   String _picture;
   bool _finished;
-  List <int> _rating;
+  int _rating;
 
-  Gem(this._id, this._name, this._description, this._tags, this._gps, this._userid, this._picture, this._finished, this._rating);
+  Gem(this._id, this._name, this._description, this._tags, this._longitude, this._latitude, this._userid, this._picture, this._finished, this._rating);
 
   Gem.map(dynamic obj) {
     this._id = obj['id'];
     this._name = obj['name'];
     this._description = obj['description'];
     this._tags = obj['tags'];
-    this._gps = obj['gps'];
+    this._longitude = obj['longitude'];
+    this._latitude = obj['latitude'];
     this._userid = obj['userid'];
     this._picture = obj['picture'];
     this._finished = obj['finished'];
@@ -28,12 +30,12 @@ class Gem {
   String get name => _name;
   String get description => _description;
   List <String> get tags => _tags;
-  String get gps => _gps;
+  double get longitude => _longitude;
+  double get latitiude => _latitude;
   String get userid => _userid;
   String get picture => _picture;
   bool get finished => _finished;
-  List <int> get rating => _rating;
-
+  int get rating => _rating;
 
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
@@ -43,7 +45,8 @@ class Gem {
     map['name'] = _name;
     map['description'] = _description;
     map['tags'] = _tags;
-    map['gps'] = _gps;
+    map['longitude'] = _longitude;
+    map['latitude'] = _latitude;
     map['userid'] = _userid;
     map['picture'] = _picture;
     map['finished'] = _finished;
@@ -57,7 +60,8 @@ class Gem {
     this._name = map['name'];
     this._description = map['description'];
     this._tags = map['tags'];
-    this._gps = map['gps'];
+    this._longitude = map['longitude'];
+    this._latitude = map['latitude'];
     this._userid = map['userid'];
     this._picture = map['picture'];
     this._finished = map['finished'];
