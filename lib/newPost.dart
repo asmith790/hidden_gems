@@ -1,17 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'firebase_firestore_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
 
 class ShowHideTextField extends StatefulWidget {
   @override
-  Post createState() {
-    return new Post();
+  NewPost createState() {
+    return new NewPost();
   }
 }
 class CustomForm extends StatefulWidget {
   @override
-  Post createState() => Post();
+  NewPost createState() => NewPost();
 }
-class Post extends State<CustomForm> {
+class NewPost extends State<CustomForm> {
   FirebaseFirestoreService db = new FirebaseFirestoreService();
   @override
   final _nameController = TextEditingController();
@@ -20,15 +25,50 @@ class Post extends State<CustomForm> {
   final _gpsController = TextEditingController();
   final _useridController = TextEditingController();
   final _pictureController = TextEditingController();
+  var uuid = new Uuid();
+  File image;
+  var imgUrl;
 
   bool _isTextFieldVisible = false;
   bool finished = true;
   List <String> tags = new List();
   List <int> rating = new List();
 
+  Future selectImage() async {
+    var img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      image = img;
+    });
+  }
+
+  removeImage(){
+    setState(() {
+      image = null;
+    });
+  }
+
+  uploadGem() async {
+    //Upload Image to Storage and get download URL
+    var imgUrl = "";
+    if(image!=null) {
+      String imgTitle = uuid.v1() + ".jpg";
+      final StorageReference firebaseStorRef = FirebaseStorage.instance.ref().child(imgTitle);
+      final StorageUploadTask task = firebaseStorRef.putFile(image);
+      imgUrl = await(await task.onComplete).ref.getDownloadURL();
+    }
+
+    //Upload Gem to DB
+    db.createGem(_nameController.text, _descriptionController.text, _tagsController.text, _gpsController.text, _useridController.text, imgUrl, finished).then((_) {
+      _nameController.clear();
+      _descriptionController.clear();
+      _tagsController.clear();
+      Navigator.pop(context);
+    });
+  }
+
   @override
   void dispose() {
-    // Clean up the controller when the Widget is disposeed
+    // Clean up the controller when the Widget is disposed
     _nameController.dispose();
     _descriptionController.dispose();
     _tagsController.dispose();
@@ -77,6 +117,27 @@ class Post extends State<CustomForm> {
             ),
             ),
 
+            Row(
+              children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
+              child: FloatingActionButton(
+                  onPressed: selectImage,
+                  tooltip: 'Upload Image',
+                  child: new Icon(Icons.add_a_photo)
+              ),
+            ),
+
+            image != null ? Text("Picture Uploaded!"): SizedBox(),
+
+            image != null ? FlatButton(
+                onPressed: removeImage,
+                child: new Icon(Icons.cancel, color: Color.fromRGBO(255, 0, 0, 1)),
+                //color: Color.fromRGBO(0, 0, 0, 0),
+            ): SizedBox(),
+
+           ]),
+
             _isTextFieldVisible ?
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
@@ -104,6 +165,7 @@ class Post extends State<CustomForm> {
               ),
             ): SizedBox(),
 
+
             SizedBox(
               height: 25.0,
             ),
@@ -111,13 +173,7 @@ class Post extends State<CustomForm> {
             Padding(padding: new EdgeInsets.all(5.0)),
             RaisedButton(
               child: Text('Add'),
-              onPressed: () {
-                  db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, _pictureController.text, finished, rating).then((_) {
-                    _nameController.clear();
-                    _descriptionController.clear();
-                    _tagsController.clear();
-                  });
-              },
+              onPressed: uploadGem,
             ),
 
             Padding(padding: new EdgeInsets.all(5.0)),
@@ -125,11 +181,7 @@ class Post extends State<CustomForm> {
               child: Text('Save as Draft'),
               onPressed: () {
                 finished = false;
-                db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, _pictureController.text, finished, rating).then((_) {
-                  _nameController.clear();
-                  _descriptionController.clear();
-                  _tagsController.clear();
-                });
+                uploadGem();
               },
             ),
           ],
