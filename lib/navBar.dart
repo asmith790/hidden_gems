@@ -7,6 +7,7 @@ import 'listView.dart';
 import 'newPost.dart';
 
 class MyDrawer extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -27,61 +28,54 @@ class MyDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
+            title: Text('Home Page'),
+            onTap: () {
+              // Update the state of the app
+              // ...
+              // Then close the drawer
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/');
+            },
+          ),
+          ListTile(
             title: Text('List View'),
             onTap: () {
               // Update the state of the app
               // ...
               // Then close the drawer
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new listView()),
-              );
-              //Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/listings');
             },
           ),
           ListTile(
             title: Text('Map View'),
             onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new MapsDemo()),
-              );
-              //Navigator.pop(context);
+              Navigator.pop(context);
+              Navigator.pushNamed(context, '/maps');
             },
           ),
           ListTile(
             title: Text('Profile'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
+                // TODO: currently the Profile Page breaks the system
                 new MaterialPageRoute(builder: (context) => new Profile()),
               );
-              //Navigator.pop(context);
             },
           ),
           ListTile(
             title: Text('New Post'),
             onTap: () {
+              Navigator.pop(context);
               Navigator.push(
                 context,
                 new MaterialPageRoute(builder: (context) => new CustomForm()),
               );
-              //Navigator.pop(context);
             },
           ),
-          ListTile(
-            title: Text('Logout'),
-            onTap: () {
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new MyHomePage()),
-              );
-              //Navigator.pop(context);
-            },
-          ),
+
         ],
       ),
     );
