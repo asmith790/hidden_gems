@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
+import 'newPost.dart';
 import 'main.dart';
 import 'mapview.dart';
 import 'listView.dart';
