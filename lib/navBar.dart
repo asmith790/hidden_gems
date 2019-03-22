@@ -60,7 +60,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                // TODO: currently the Profile Page breaks the system
+                // TODO: currently the Profile Page breaks the system  -- Fixed So update routes
                 new MaterialPageRoute(builder: (context) => new Profile()),
               );
             },
