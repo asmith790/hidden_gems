@@ -3,7 +3,7 @@ import 'profile.dart';
 import 'newPost.dart';
 import 'main.dart';
 import 'mapview.dart';
-import 'listView.dart';
+import 'listingPage.dart';
 import 'newPost.dart';
 
 class MyDrawer extends StatelessWidget {
