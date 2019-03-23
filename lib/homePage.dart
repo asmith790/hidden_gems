@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'authProvider.dart';
 import 'navBar.dart';
 import 'auth.dart';
 
-
 class HomePage extends StatelessWidget{
-  HomePage({this.auth, this.onSignedOut});
-  final BaseAuth auth;
+  const HomePage({this.onSignedOut});
   final VoidCallback onSignedOut;
 
-  void _signOut() async{
+  // parameter is context because the inherited widget auth needs it
+  Future<void> _signOut(BuildContext context) async{
     try{
+      final BaseAuth auth = AuthProvider.of(context).auth;
       await auth.signOut();
       onSignedOut(); // call voidCallback function
+      if(Navigator.canPop(context)) {
+//        Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
     }catch(e){
       print(e);
     }
@@ -24,7 +29,7 @@ class HomePage extends StatelessWidget{
         title: new Text('Home'),
         actions: <Widget>[
           new FlatButton(
-              onPressed: _signOut,
+              onPressed: () => _signOut(context),
               child: new Text(
                 'Logout',
                 style: new TextStyle(
@@ -35,8 +40,13 @@ class HomePage extends StatelessWidget{
           )
         ],
       ),
-      body: new Text(
-        'This is hidden gems'
+      body: Container(
+        child: Center(
+            child: Text(
+                'Welcome',
+                style: TextStyle(fontSize: 32.0)
+            )
+        ),
       ),
       drawer: MyDrawer(),
     );

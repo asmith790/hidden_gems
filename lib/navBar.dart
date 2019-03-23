@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'profile.dart';
 import 'newPost.dart';
-import 'main.dart';
-import 'mapview.dart';
-import 'listingPage.dart';
-import 'newPost.dart';
+import 'homePage.dart';
 
 class MyDrawer extends StatelessWidget {
 
@@ -34,7 +31,12 @@ class MyDrawer extends StatelessWidget {
               // ...
               // Then close the drawer
               Navigator.pop(context);
+              /// CHANGED - trying to fix if we can pass root as a widget, so calling Home instead of Root
               Navigator.pushNamed(context, '/');
+//              Navigator.push(
+//                context,
+//                new MaterialPageRoute(builder: (context) => new HomePage()),
+//              );
             },
           ),
           ListTile(
@@ -60,7 +62,6 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                // TODO: currently the Profile Page breaks the system  -- Fixed So update routes
                 new MaterialPageRoute(builder: (context) => new Profile()),
               );
             },
@@ -75,6 +76,16 @@ class MyDrawer extends StatelessWidget {
               );
             },
           ),
+//          ListTile(
+//            title: Text('Logout'),
+//            onTap: () {
+//              Navigator.pop(context);
+//              Navigator.push(
+//                context,
+//                new MaterialPageRoute(builder: (context) => new CustomForm()),
+//              );
+//            },
+//          ),
 
         ],
       ),
