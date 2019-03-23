@@ -31,9 +31,8 @@ class PostView extends StatelessWidget {
                       .map((document) => new Post(
                       description: document["description"],
                       name: document["name"],
-                      tags: document["tags"].toString(),
-                      upvotes: document["rating"][1],
-                      downvotes: document["rating"][0],
+                      tags: document["tags"].toString(),    //Update this to the tag thing Sami is using
+                      rating: document["rating"],
                       userid: document["userid"],
                       imgUrl: document["picture"],
                   ))
@@ -87,7 +86,7 @@ class PostView extends StatelessWidget {
                           Text(posts[0].userid),
                         ],
                       ),
-                      VoteTracker(count: posts[0].upvotes - posts[0].downvotes),
+                      VoteTracker(count: posts[0].rating, postId: id,),
                     ],
                   );
               }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'post.dart';
 
@@ -5,28 +6,37 @@ import 'post.dart';
 //parent widget with the other stuff that is stateless. So only the counter changes.
 class VoteTracker extends StatefulWidget {
   final int count;
+  final String postId;
 
-  VoteTracker({this.count});
+  VoteTracker({this.count, this.postId});
 
   @override
-  _VoteTrackerState createState() => _VoteTrackerState(count);
+  _VoteTrackerState createState() => _VoteTrackerState(count, postId);
 }
 
 class _VoteTrackerState extends State<VoteTracker> {
   int _counter;
+  String _postId;
 
-  _VoteTrackerState(int count) {
+  _VoteTrackerState(int count, String postId) {
     _counter = count;
+    _postId = postId;
   }
 
-  void increment() {
+  Future<bool> increment(String id) {
+
+    Firestore.instance.collection('posts').document(id).updateData({'rating': _counter + 1});
+
     setState(() {
       _counter++;
       //update database
     });
   }
 
-  void decrement() {
+  Future<bool> decrement(String id) {
+    
+    Firestore.instance.collection('posts').document(id).updateData({'rating': _counter -1});
+    
     setState(() {
       _counter--;
       //update database
@@ -52,7 +62,7 @@ class _VoteTrackerState extends State<VoteTracker> {
                 RaisedButton(
                   child: Text('Downvote'),
                   onPressed: () {
-                    decrement();
+                    decrement(_postId);
                   },
                 )
               ],
@@ -62,7 +72,7 @@ class _VoteTrackerState extends State<VoteTracker> {
                 RaisedButton(
                   child: Text('Upvote'),
                   onPressed: () {
-                    increment();
+                    increment(_postId);
                   },
                 )
               ],
