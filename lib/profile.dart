@@ -2,8 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navBar.dart';
 import 'postView.dart';
+import 'auth.dart';
+import 'authProvider.dart';
 
 class Profile extends StatelessWidget {
+  const Profile({this.onSignedOut});
+  final VoidCallback onSignedOut;
+
+  // parameter is context because the inherited widget auth needs it
+  Future<void> _signOut(BuildContext context) async{
+    try{
+      final BaseAuth auth = AuthProvider.of(context).auth;
+      await auth.signOut();
+      onSignedOut(); // call voidCallback function
+      if(Navigator.canPop(context)) {
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    }catch(e){
+      print(e);
+    }
+  }
+
+
   Image getPicture(String url){
     if(url == ""){
       return Image.asset(
@@ -65,7 +85,21 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(title: Text('Hidden Gems')),
+      appBar: AppBar(
+          title: Text('Hidden Gems'),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: () => _signOut(context),
+              child: new Text(
+                'Logout',
+                style: new TextStyle(
+                    fontSize: 17.0,
+                    color: Colors.white
+                ),
+              )
+            )
+          ]
+      ),
       body: Column(
     children: <Widget>[
       StreamBuilder<QuerySnapshot>(

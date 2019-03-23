@@ -14,7 +14,6 @@ class HomePage extends StatelessWidget{
       await auth.signOut();
       onSignedOut(); // call voidCallback function
       if(Navigator.canPop(context)) {
-//        Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
     }catch(e){

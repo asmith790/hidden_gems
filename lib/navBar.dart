@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'profile.dart';
 import 'newPost.dart';
-import 'homePage.dart';
 
 class MyDrawer extends StatelessWidget {
 
@@ -25,26 +23,16 @@ class MyDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text('Home Page'),
+            title: Text('Profile'),
             onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
+              // TODO: IDEA: can just pop until first profile page instead of calling root
               Navigator.pop(context);
-              /// CHANGED - trying to fix if we can pass root as a widget, so calling Home instead of Root
               Navigator.pushNamed(context, '/');
-//              Navigator.push(
-//                context,
-//                new MaterialPageRoute(builder: (context) => new HomePage()),
-//              );
             },
           ),
           ListTile(
             title: Text('List View'),
             onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
               Navigator.pop(context);
               Navigator.pushNamed(context, '/listings');
             },
@@ -57,16 +45,6 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Profile'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new Profile()),
-              );
-            },
-          ),
-          ListTile(
             title: Text('New Post'),
             onTap: () {
               Navigator.pop(context);
@@ -76,17 +54,6 @@ class MyDrawer extends StatelessWidget {
               );
             },
           ),
-//          ListTile(
-//            title: Text('Logout'),
-//            onTap: () {
-//              Navigator.pop(context);
-//              Navigator.push(
-//                context,
-//                new MaterialPageRoute(builder: (context) => new CustomForm()),
-//              );
-//            },
-//          ),
-
         ],
       ),
     );

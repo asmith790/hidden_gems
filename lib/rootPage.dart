@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'auth.dart';
 import 'loginPage.dart';
-import 'homePage.dart';
 import 'authProvider.dart';
+import 'profile.dart';
 
 
 class RootPage extends StatefulWidget {
@@ -50,16 +49,12 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     switch (_authStatus) {
       case AuthStatus.notSignedIn:
-//        if(Navigator.canPop(context)) {
-//          Navigator.popUntil(context, ModalRoute.withName('/login'));
-//        }else{
-          return new Login(
-            onSignedIn: _signedIn,
-          );
-//        }
+        return new Login(
+          onSignedIn: _signedIn,
+        );
         break;
       case AuthStatus.signedIn:
-        return new HomePage(
+        return new Profile(
             onSignedOut: _signedOut
         );
     }
