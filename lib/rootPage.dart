@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'auth.dart';
 import 'loginPage.dart';
-import 'homePage.dart';
+import 'authProvider.dart';
+import 'profile.dart';
 
-class RootPage extends StatefulWidget{
-  RootPage({this.auth});
-  final BaseAuth auth;
 
+class RootPage extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _RootPageState();
+  _RootPageState createState() => new _RootPageState();
 }
 
 enum AuthStatus{
@@ -16,28 +14,33 @@ enum AuthStatus{
   signedIn
 }
 
-class _RootPageState extends State<RootPage>{
+class _RootPageState extends State<RootPage> {
+  // current state of the user
   AuthStatus _authStatus = AuthStatus.notSignedIn;
 
-  initState() {
-    super.initState();
+  // use this instead of init state since we are using an inherited widget for Auth
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    var auth = AuthProvider.of(context).auth;
     //once currentUser() returns a user since it is a Future, then we can do something
-    widget.auth.currentUser().then((userId){
+    auth.currentUser().then((userId) {
       setState(() {
         // if userId = null then we set the auth status to not signed in
-        _authStatus = userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
+        _authStatus =
+        userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
       });
     });
   }
 
-  void _signedIn(){
-    setState((){
+  void _signedIn() {
+    setState(() {
       _authStatus = AuthStatus.signedIn;
     });
   }
 
-  void _signedOut(){
-    setState((){
+  void _signedOut() {
+    setState(() {
       _authStatus = AuthStatus.notSignedIn;
     });
   }
@@ -47,13 +50,12 @@ class _RootPageState extends State<RootPage>{
     switch (_authStatus) {
       case AuthStatus.notSignedIn:
         return new Login(
-          auth: widget.auth,
           onSignedIn: _signedIn,
         );
+        break;
       case AuthStatus.signedIn:
-        return new HomePage(
-          auth: widget.auth,
-          onSignedOut: _signedOut
+        return new Profile(
+            onSignedOut: _signedOut
         );
     }
   }

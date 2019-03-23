@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'auth.dart';
+import 'authProvider.dart';
 
 class Login extends StatefulWidget {
-  Login({this.auth, this.onSignedIn}); // when page is initialized, we get the instance of auth
-  final BaseAuth auth; // our abstract class
+  Login({this.onSignedIn});
   // a voidCallback takes no parameters and returns no parameters
   final VoidCallback onSignedIn;
 
@@ -37,12 +36,13 @@ class _Login extends State<Login>{
   void validateAndSubmit() async{
     if(validateAndSave()){
       try{
+        var auth = AuthProvider.of(context).auth;
         if(_formType == FormType.login){
-          String userId = await widget.auth.signInWithEmailAndPassword(_email, _password);
+          String userId = await auth.signInWithEmailAndPassword(_email, _password);
           print('SignedIn: $userId');
 
         }else{
-          String userId = await widget.auth.createUserWithEmailAndPassword(_email, _password);
+          String userId = await auth.createUserWithEmailAndPassword(_email, _password);
           print('Registered User: $userId');
         }
         // after we either sign in or create an account, we want to be signed in
@@ -76,12 +76,6 @@ class _Login extends State<Login>{
           title: Text('Login Page'),
           automaticallyImplyLeading: false,
         ),
-//          floatingActionButton: new FloatingActionButton(
-//            child: new Icon(Icons.fullscreen_exit),
-//            onPressed: () {
-//              Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
-//            },
-//          ),
         body: new Container(
           padding: EdgeInsets.all(16.0),
           child: new Form(

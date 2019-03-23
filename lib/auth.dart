@@ -22,8 +22,13 @@ class Auth implements BaseAuth{
 
   Future<String> currentUser() async {
     // this asynchronously gets the current user if there is one, else returns null
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    return user.uid;
+    try {
+      FirebaseUser user = await FirebaseAuth.instance.currentUser();
+      return user.uid;
+    }catch(e){
+      print(e);
+    }
+    return null;
   }
 
   Future<void> signOut() async{

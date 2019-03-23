@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'profile.dart';
-import 'newPost.dart';
-import 'main.dart';
-import 'mapview.dart';
-import 'listingPage.dart';
 import 'newPost.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -28,21 +23,16 @@ class MyDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text('Home Page'),
+            title: Text('Profile'),
             onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/');
+              if(Navigator.canPop(context)) {
+                Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+              }
             },
           ),
           ListTile(
             title: Text('List View'),
             onTap: () {
-              // Update the state of the app
-              // ...
-              // Then close the drawer
               Navigator.pop(context);
               Navigator.pushNamed(context, '/listings');
             },
@@ -55,17 +45,6 @@ class MyDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            title: Text('Profile'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                // TODO: currently the Profile Page breaks the system  -- Fixed So update routes
-                new MaterialPageRoute(builder: (context) => new Profile()),
-              );
-            },
-          ),
-          ListTile(
             title: Text('New Post'),
             onTap: () {
               Navigator.pop(context);
@@ -75,7 +54,6 @@ class MyDrawer extends StatelessWidget {
               );
             },
           ),
-
         ],
       ),
     );
