@@ -25,9 +25,9 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             title: Text('Profile'),
             onTap: () {
-              // TODO: IDEA: can just pop until first profile page instead of calling root
-              Navigator.pop(context);
-              Navigator.pushNamed(context, '/');
+              if(Navigator.canPop(context)) {
+                Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+              }
             },
           ),
           ListTile(

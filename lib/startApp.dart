@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'auth.dart';
 import 'authProvider.dart';
-
-import 'listingPage.dart';
 import 'rootPage.dart';
 import 'loginPage.dart';
+import 'profile.dart';
+import 'listingPage.dart';
 import 'mapview.dart';
 
 
@@ -21,6 +21,7 @@ class StartApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/login' : (_) => new Login(),
+          '/profile' :(_) => new Profile(),
           '/listings': (_) => new ListingPage(),
           '/maps' : (_) => new MapsDemo(),
           //TODO: add all the other routes here
