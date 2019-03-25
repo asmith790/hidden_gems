@@ -56,7 +56,7 @@ class Gem {
     this._id = map['id'];
     this._name = map['name'];
     this._description = map['description'];
-    this._tags = map['tags'];
+    this._tags = new List<String>.from(map['tags']);
     this._gps = map['gps'];
     this._userid = map['userid'];
     this._picture = map['picture'];

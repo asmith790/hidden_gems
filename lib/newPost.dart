@@ -31,7 +31,9 @@ class NewPost extends State<CustomForm> {
 
   bool _isTextFieldVisible = false;
   bool finished = true;
-  List <String> tags = new List();
+  //List <String> tags = new List();
+  // var namesFixed = new List<String>(3);
+  var tags = new List<String>();
   int rating = 1;
 
   Future selectImage() async {
@@ -41,7 +43,7 @@ class NewPost extends State<CustomForm> {
     });
   }
 
-  removeImage(){
+  removeImage() {
     setState(() {
       image = null;
     });
@@ -50,19 +52,31 @@ class NewPost extends State<CustomForm> {
   uploadGem() async {
     //Upload Image to Storage and get download URL
     var imgUrl = "";
-    if(image!=null) {
+    if (image != null) {
       String imgTitle = uuid.v1() + ".jpg";
-      final StorageReference firebaseStorRef = FirebaseStorage.instance.ref().child(imgTitle);
+      final StorageReference firebaseStorRef = FirebaseStorage.instance.ref()
+          .child(imgTitle);
       final StorageUploadTask task = firebaseStorRef.putFile(image);
       imgUrl = await(await task.onComplete).ref.getDownloadURL();
     }
 
     //Upload Gem to DB
-    db.createGem(_nameController.text, _descriptionController.text, tags, _gpsController.text, _useridController.text, imgUrl, finished, rating).then((_) {
+    db.createGem(
+        _nameController.text,
+        _descriptionController.text,
+        tags,
+        _gpsController.text,
+        _useridController.text,
+        imgUrl,
+        finished,
+        rating).then((_) {
       _nameController.clear();
       _descriptionController.clear();
       _tagsController.clear();
-      Navigator.pop(context);
+      this.setState(() {
+        tags.clear();
+      });
+      //Navigator.pop(context);
     });
   }
 
@@ -78,7 +92,6 @@ class NewPost extends State<CustomForm> {
     super.dispose();
   }
 
-
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -89,54 +102,72 @@ class NewPost extends State<CustomForm> {
         child: Column(
           children: <Widget>[
             Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0),
-            child: TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            ),
-
-            Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0),
-            child: TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-            ),
-            ),
-
-            Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0),
-            child: TextField(
-              controller: _tagsController,
-              decoration: InputDecoration(labelText: 'Tags'),
-              onSubmitted: (text) {
-                setState(() {
-                  tags.add(text);
-                });
-              },
-            ),
-            ),
-
-            Row(
-              children: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 15.0),
-              child: FloatingActionButton(
-                  onPressed: selectImage,
-                  tooltip: 'Upload Image',
-                  child: new Icon(Icons.add_a_photo)
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: TextField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
               ),
             ),
 
-            image != null ? Text("Picture Uploaded!"): SizedBox(),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: TextField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+            ),
 
-            image != null ? FlatButton(
-                onPressed: removeImage,
-                child: new Icon(Icons.cancel, color: Color.fromRGBO(255, 0, 0, 1)),
-                //color: Color.fromRGBO(0, 0, 0, 0),
-            ): SizedBox(),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: TextField(
+                controller: _tagsController,
+                decoration: InputDecoration(labelText: 'Tags'),
+              ),
+              ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: RaisedButton(
+                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                  onPressed: (){
+                  tags.add(_tagsController.text);
+                  this.setState(() {
+                    _tagsController.clear();
+                  });
 
-           ]),
+                  //_tagsController.clear();
+                },
+                //tooltip: 'Add tag',
+                child: new Icon(Icons.add)
+              ),
+            ),
+            Text(
+              'Tags: $tags',
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Row(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 25.0, vertical: 0.0),
+                    child: FloatingActionButton(
+                        onPressed: selectImage,
+                        tooltip: 'Upload Image',
+                        child: new Icon(Icons.add_a_photo)
+                    ),
+                  ),
+
+                  image != null ? Text("Picture Uploaded!") : SizedBox(),
+
+                  image != null ? FlatButton(
+                    onPressed: removeImage,
+                    child: new Icon(
+                        Icons.cancel, color: Color.fromRGBO(255, 0, 0, 1)),
+                    //color: Color.fromRGBO(0, 0, 0, 0),
+                  ) : SizedBox(),
+
+                ]),
 
             _isTextFieldVisible ?
             Padding(
@@ -145,7 +176,7 @@ class NewPost extends State<CustomForm> {
                 controller: _gpsController,
                 decoration: InputDecoration(labelText: 'GPS'),
               ),
-            ): SizedBox(),
+            ) : SizedBox(),
 
             _isTextFieldVisible ?
             Padding(
@@ -154,7 +185,7 @@ class NewPost extends State<CustomForm> {
                 controller: _useridController,
                 decoration: InputDecoration(labelText: 'UserId'),
               ),
-            ): SizedBox(),
+            ) : SizedBox(),
 
             _isTextFieldVisible ?
             Padding(
@@ -163,20 +194,22 @@ class NewPost extends State<CustomForm> {
                 controller: _pictureController,
                 decoration: InputDecoration(labelText: 'Picture'),
               ),
-            ): SizedBox(),
+            ) : SizedBox(),
 
 
             SizedBox(
               height: 25.0,
             ),
 
-            Padding(padding: new EdgeInsets.all(5.0)),
             RaisedButton(
               child: Text('Add'),
-              onPressed: uploadGem,
+              onPressed: (){
+                finished = true;
+                //tags.add(_tagsController.text);
+                uploadGem();
+              },
             ),
 
-            Padding(padding: new EdgeInsets.all(5.0)),
             RaisedButton(
               child: Text('Save as Draft'),
               onPressed: () {
