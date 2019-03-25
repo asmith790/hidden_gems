@@ -20,6 +20,8 @@ class _RootPageState extends State<RootPage> {
   // current state of the user
   AuthStatus _authStatus = AuthStatus.notDetermined;
 
+  String _email;
+
   // use this instead of init state since we are using an inherited widget for Auth
   @override
   void didChangeDependencies() {
@@ -32,6 +34,7 @@ class _RootPageState extends State<RootPage> {
         _authStatus =
         userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
       });
+      // get email from userI
     });
   }
 
@@ -54,7 +57,7 @@ class _RootPageState extends State<RootPage> {
         return _buildWaitingScreen();
       case AuthStatus.notSignedIn:
         return new Login(
-          onSignedIn: _signedIn,
+            onSignedIn: _signedIn
         );
       case AuthStatus.signedIn:
         return new Profile(

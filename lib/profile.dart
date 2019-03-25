@@ -23,7 +23,6 @@ class Profile extends StatelessWidget {
     }
   }
 
-
   Image getPicture(String url){
     if(url == ""){
       return Image.asset(
@@ -103,7 +102,7 @@ class Profile extends StatelessWidget {
       body: Column(
     children: <Widget>[
       StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('posts').where("userid", isEqualTo: "mel123").snapshots(), //Change username to logged in user
+        stream: Firestore.instance.collection('posts').where("userid", isEqualTo: "mel123").snapshots(), //TODO:Change username to logged in user
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) return new Text('${snapshot.error}');
           switch (snapshot.connectionState) {

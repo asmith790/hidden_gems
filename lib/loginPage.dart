@@ -1,5 +1,18 @@
 import 'package:flutter/material.dart';
 import 'authProvider.dart';
+import 'auth.dart';
+
+class EmailFieldValidator {
+  static String validate(String value) {
+    return value.isEmpty ? 'Email can\'t be empty' : null;
+  }
+}
+
+class PasswordFieldValidator {
+  static String validate(String value) {
+    return value.isEmpty ? 'Password can\'t be empty' : null;
+  }
+}
 
 class Login extends StatefulWidget {
   Login({this.onSignedIn});
@@ -16,7 +29,7 @@ enum FormType{
 }
 
 class _Login extends State<Login>{
-  final formKey = new GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
 
   String _email;
   String _password;
@@ -26,23 +39,22 @@ class _Login extends State<Login>{
     final form = formKey.currentState; // gets the form state
     if(form.validate()){
       form.save(); // save the state of the form
-      print('Form is valid'); // print statements for debugging
       return true;
     }
     return false;
   }
 
   //asynchronous function
-  void validateAndSubmit() async{
+  Future<void> validateAndSubmit() async{
     if(validateAndSave()){
       try{
-        var auth = AuthProvider.of(context).auth;
+        final BaseAuth auth = AuthProvider.of(context).auth;
         if(_formType == FormType.login){
-          String userId = await auth.signInWithEmailAndPassword(_email, _password);
+          final String userId = await auth.signInWithEmailAndPassword(_email, _password);
           print('SignedIn: $userId');
 
         }else{
-          String userId = await auth.createUserWithEmailAndPassword(_email, _password);
+          final String userId = await auth.createUserWithEmailAndPassword(_email, _password);
           print('Registered User: $userId');
         }
         // after we either sign in or create an account, we want to be signed in
@@ -94,15 +106,17 @@ class _Login extends State<Login>{
     // email and password fields - in both forms
     return [
       new TextFormField(
+        key: Key('email'),
         decoration: new InputDecoration(labelText: 'Email'),
-        validator: (value) => value.isEmpty ? 'Email can\'t be empty' : null,
-        onSaved: (value) => _email = value,
+        validator: EmailFieldValidator.validate,
+        onSaved: (String value) => _email = value,
       ),
       new TextFormField(
+        key: Key('password'),
         decoration: new InputDecoration(labelText: 'Password'),
         obscureText: true,
-        validator: (value) => value.isEmpty ? 'Password can\'t be empty' : null,
-        onSaved: (value) => _password = value,
+        validator: PasswordFieldValidator.validate,
+        onSaved: (String value) => _password = value,
       ),
     ];
   }
