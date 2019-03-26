@@ -32,10 +32,7 @@ class NewPost extends State<CustomForm> {
 
   bool _isTextFieldVisible = false;
   bool finished = true;
-  //List <String> tags = new List();
-  // var namesFixed = new List<String>(3);
   var tags = new List<String>();
-  int rating = 1;
 
   Future selectImage() async {
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -89,25 +86,6 @@ class NewPost extends State<CustomForm> {
       print('caught generic exception');
       print(e);
     }
-
-    //Upload Gem to DB
-//    db.createGem(
-//        _nameController.text,
-//        _descriptionController.text,
-//        tags,
-//        _gpsController.text,
-//        _useridController.text,
-//        imgUrl,
-//        finished,
-//        rating).then((_) {
-//      _nameController.clear();
-//      _descriptionController.clear();
-//      _tagsController.clear();
-//      this.setState(() {
-//        tags.clear();
-//      });
-//      //Navigator.pop(context);
-//    });
   }
 
   @override
