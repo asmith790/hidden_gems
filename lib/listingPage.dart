@@ -77,6 +77,7 @@ class ListingPage extends StatelessWidget {
                       ],
                     ),
                     onTap: () {
+                      print('document id: ' + document.documentID);
                       Navigator.push(
                         context,
                         new MaterialPageRoute(builder: (context) => new PostView(id: document.documentID)),
@@ -92,3 +93,4 @@ class ListingPage extends StatelessWidget {
     );
   }
 }
+

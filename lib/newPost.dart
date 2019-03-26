@@ -72,7 +72,6 @@ class NewPost extends State<CustomForm> {
           'userid': 'auser',
         },
       );
-      print(resp);
       _nameController.clear();
       _descriptionController.clear();
       _tagsController.clear();
