@@ -4,13 +4,59 @@ import 'auth.dart';
 
 class EmailFieldValidator {
   static String validate(String value) {
-    return value.isEmpty ? 'Email can\'t be empty' : null;
+    //TODO: check if the email is already associated with an account, if it is, tell user to sign in
+    Pattern pattern =
+        r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+    RegExp regex = new RegExp(pattern);
+
+    if (value.trim().isEmpty) {
+      return 'Email is required';
+    }else if (!regex.hasMatch(value)) {
+      return 'Enter Valid Email';
+    }else{
+      return null;
+    }
   }
 }
 
 class PasswordFieldValidator {
   static String validate(String value) {
-    return value.isEmpty ? 'Password can\'t be empty' : null;
+    Pattern pattern = r'^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$';
+    RegExp regex = new RegExp(pattern);
+
+    if(value.trim().isEmpty){
+      return 'Password is required';
+    }else if(!regex.hasMatch(value)){
+      return 'Must contain at least 1 number and be at least 6 characters';
+    }else{
+      return null;
+    }
+  }
+}
+
+class UsernameFieldValidator {
+  static String validate(String value) {
+    //TODO: also check if the username exists already by searching through DB
+
+    if (value.trim().isEmpty) {
+      return 'Email is required';
+//    }else if () {
+//      return 'Username already exists';
+    }else {
+      return null;
+    }
+  }
+}
+
+class NameFieldValidator {
+  static String validate(String value) {
+    if (value.trim().isEmpty) {
+      return 'Name is required';
+    } else if (value.length < 3) {
+      return 'Name must be more than 2 charater';
+    } else {
+      return null;
+    }
   }
 }
 
@@ -31,9 +77,14 @@ enum FormType{
 class _Login extends State<Login>{
   final GlobalKey<FormState> formKey = new GlobalKey<FormState>();
 
+  FormType _formType = FormType.login; // initially at the login form
   String _email;
   String _password;
-  FormType _formType = FormType.login; // initially at the login form
+  // TODO pass info to the users table in database when they create an account
+  String _name;
+  String _username;
+
+  String _authHint = '';
 
   bool validateAndSave(){
     final form = formKey.currentState; // gets the form state
@@ -49,19 +100,30 @@ class _Login extends State<Login>{
     if(validateAndSave()){
       try{
         final BaseAuth auth = AuthProvider.of(context).auth;
+        String userId;
         if(_formType == FormType.login){
-          final String userId = await auth.signInWithEmailAndPassword(_email, _password);
+          userId = await auth.signInWithEmailAndPassword(_email, _password);
           print('SignedIn: $userId');
 
         }else{
-          final String userId = await auth.createUserWithEmailAndPassword(_email, _password);
+          userId = await auth.createUserWithEmailAndPassword(_email, _password);
           print('Registered User: $userId');
         }
+        setState(() {
+          _authHint = 'Signed In successfully';
+        });
         // after we either sign in or create an account, we want to be signed in
         widget.onSignedIn(); // ensure the rootPage receives message we are signedIn
       }catch(e){
+        setState(() {
+          _authHint = 'Problem signing in or registering account';
+        });
         print('Error: $e');
       }
+    }else {
+      setState(() {
+        _authHint = '';
+      });
     }
   }
 
@@ -71,12 +133,14 @@ class _Login extends State<Login>{
     // new UI -> new state
     setState(() {
       _formType = FormType.register;
+      _authHint = '';
     });
   }
   // move from register page to login page
   void moveToLogin(){
     setState(() {
       _formType = FormType.login;
+      _authHint = '';
     });
   }
 
@@ -88,43 +152,141 @@ class _Login extends State<Login>{
           title: Text('Login Page'),
           automaticallyImplyLeading: false,
         ),
-        body: new Container(
-          padding: EdgeInsets.all(16.0),
-          child: new Form(
-            key: formKey,
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: buildInputs() + buildSubmitButtons(),
+        body: new ListView(
+          shrinkWrap: true,
+          children: <Widget>[
+            SizedBox(width: 20.0,height: 20.0),
+            new Container(
+              height: 100.0,
+              width: 80.0,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(
+                    'assets/gem.png',
+                  ),
+                  fit: BoxFit.scaleDown,
+                ),
+              ),
             ),
-          )
+            new Center(
+              child: Padding(
+                padding: const EdgeInsets.all(28.0),
+                    child: new Form(
+                      key: formKey,
+                      child: new Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                          children: buildInputs() + buildSubmitButtons(),
+                      ),
+                    )
+              ),
+            ),
+          ]
         )
       );
   }
 
-
   List<Widget> buildInputs(){
     // email and password fields - in both forms
-    return [
-      new TextFormField(
-        key: Key('email'),
-        decoration: new InputDecoration(labelText: 'Email'),
-        validator: EmailFieldValidator.validate,
-        onSaved: (String value) => _email = value,
-      ),
-      new TextFormField(
-        key: Key('password'),
-        decoration: new InputDecoration(labelText: 'Password'),
-        obscureText: true,
-        validator: PasswordFieldValidator.validate,
-        onSaved: (String value) => _password = value,
-      ),
-    ];
+    if(_formType == FormType.login){
+      return [
+        new TextFormField(
+          key: Key('email'),
+          keyboardType: TextInputType.emailAddress,
+          decoration: new InputDecoration(
+            labelText: 'Email',
+            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+            ),
+          ),
+          validator: EmailFieldValidator.validate,
+          onSaved: (String value) => _email = value,
+        ),
+        SizedBox(width: 20.0,height: 20.0),
+        new TextFormField(
+          key: Key('password'),
+          keyboardType: TextInputType.text,
+          decoration: new InputDecoration(
+            labelText: 'Password',
+            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+            ),
+          ),
+          obscureText: true,
+          validator: PasswordFieldValidator.validate,
+          onSaved: (String value) => _password = value,
+        ),
+      ];
+    }else{
+      return [
+        new TextFormField(
+          key: Key('email'),
+          keyboardType: TextInputType.emailAddress,
+          decoration: new InputDecoration(
+            labelText: 'Email',
+            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+            ),
+          ),
+          validator: EmailFieldValidator.validate,
+          onSaved: (String value) => _email = value,
+        ),
+        SizedBox(width: 20.0,height: 20.0),
+        new TextFormField(
+          key: Key('name'),
+          keyboardType: TextInputType.text,
+          decoration: new InputDecoration(
+              labelText: 'Name',
+              contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20.0)
+              )
+          ),
+          validator: NameFieldValidator.validate,
+          onSaved: (String value) => _name = value,
+        ),
+        SizedBox(width: 20.0,height: 20.0),
+        new TextFormField(
+          key: Key('username'),
+          keyboardType: TextInputType.text,
+          decoration: new InputDecoration(
+            labelText: 'Username',
+            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+            ),
+          ),
+          validator: UsernameFieldValidator.validate,
+          onSaved: (String value) => _username = value,
+        ),
+        SizedBox(width: 20.0,height: 20.0),
+        new TextFormField(
+          key: Key('password'),
+          keyboardType: TextInputType.text,
+          decoration: new InputDecoration(
+            labelText: 'Password',
+            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20.0)
+            ),
+          ),
+          obscureText: true,
+          validator: PasswordFieldValidator.validate,
+          onSaved: (String value) => _password = value,
+        ),
+      ];
+    }
   }
 
   List<Widget> buildSubmitButtons(){
     if(_formType == FormType.login){
       return [
-        new RaisedButton(
+        hintText(),
+        SizedBox(width: 20.0,height: 10.0),
+        new OutlineButton(
+          padding: EdgeInsets.only(left: 40.0, top: 20.0, right: 40.0, bottom: 20.0),
           child: new Text(
             'Login',
             style: new TextStyle(
@@ -137,7 +299,7 @@ class _Login extends State<Login>{
           child: new Text(
             'Create New Account',
             style: new TextStyle(
-              fontSize: 20.0,
+              fontSize: 15.0,
             ),
           ),
           onPressed: moveToRegister,
@@ -145,9 +307,12 @@ class _Login extends State<Login>{
       ];
     }else{
       return [
-        new RaisedButton(
+        hintText(),
+        SizedBox(width: 20.0,height: 10.0),
+        new OutlineButton(
+          padding: EdgeInsets.only(left: 40.0, top: 20.0, right: 40.0, bottom: 20.0),
           child: new Text(
-            'Create New Account',
+            'Register',
             style: new TextStyle(
               fontSize: 20.0,
             ),
@@ -158,13 +323,25 @@ class _Login extends State<Login>{
           child: new Text(
             'Have an Account? Login',
             style: new TextStyle(
-              fontSize: 20.0,
+              fontSize: 15.0,
             ),
           ),
           onPressed: moveToLogin,
         )
       ];
     }
+  }
+
+  Widget hintText() {
+    return new Container(
+      //height: 80.0,
+//        padding: const EdgeInsets.all(32.0),
+        child: new Text(
+            _authHint,
+            key: new Key('hint'),
+            style: new TextStyle(fontSize: 18.0, color: Colors.grey),
+            textAlign: TextAlign.center)
+    );
   }
 
 }
