@@ -68,10 +68,18 @@ class NewPost extends State<CustomForm> {
           'name': _nameController.text,
           'description': _descriptionController.text,
           'finished': finished,
+          'latitude': 1.0,
+          'longitude': 1.0,
+          'picture': imgUrl,
+          'tags': tags,
+          'userid': 'auser',
         },
       );
       print(resp);
       _nameController.clear();
+      _descriptionController.clear();
+      _tagsController.clear();
+      Navigator.pop(context);
     } on CloudFunctionsException catch (e) {
       print('caught firebase functions exception');
       print(e.code);
