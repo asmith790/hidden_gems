@@ -34,7 +34,8 @@ class ListingPage extends StatelessWidget {
             case ConnectionState.waiting:
               return new Center(child: new CircularProgressIndicator());
             default:
-              return new ListView(
+              return new ListView(  //Might have to use a listview builder and specify item count?
+                //itemCount: snapshot.data.documents.length,
                 children:
                     snapshot.data.documents.map((DocumentSnapshot document) {
                   return new ListTile(
