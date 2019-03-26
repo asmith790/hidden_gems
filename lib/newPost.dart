@@ -5,6 +5,7 @@ import 'firebase_firestore_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class ShowHideTextField extends StatefulWidget {
   @override
@@ -60,24 +61,39 @@ class NewPost extends State<CustomForm> {
       imgUrl = await(await task.onComplete).ref.getDownloadURL();
     }
 
+    try {
+      final dynamic resp = await CloudFunctions.instance.call(
+        functionName: 'writeTest',
+      );
+      print(resp);
+    } on CloudFunctionsException catch (e) {
+      print('caught firebase functions exception');
+      print(e.code);
+      print(e.message);
+      print(e.details);
+    } catch (e) {
+      print('caught generic exception');
+      print(e);
+    }
+
     //Upload Gem to DB
-    db.createGem(
-        _nameController.text,
-        _descriptionController.text,
-        tags,
-        _gpsController.text,
-        _useridController.text,
-        imgUrl,
-        finished,
-        rating).then((_) {
-      _nameController.clear();
-      _descriptionController.clear();
-      _tagsController.clear();
-      this.setState(() {
-        tags.clear();
-      });
-      //Navigator.pop(context);
-    });
+//    db.createGem(
+//        _nameController.text,
+//        _descriptionController.text,
+//        tags,
+//        _gpsController.text,
+//        _useridController.text,
+//        imgUrl,
+//        finished,
+//        rating).then((_) {
+//      _nameController.clear();
+//      _descriptionController.clear();
+//      _tagsController.clear();
+//      this.setState(() {
+//        tags.clear();
+//      });
+//      //Navigator.pop(context);
+//    });
   }
 
   @override

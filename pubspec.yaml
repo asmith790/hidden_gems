@@ -29,6 +29,7 @@ dependencies:
   # Image Uploading
   image_picker:
   uuid:
+  cloud_functions: 0.1.2+1
 
 
 #  google_maps_flutter: ^0.0.3+3
