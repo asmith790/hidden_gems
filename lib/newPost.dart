@@ -64,8 +64,14 @@ class NewPost extends State<CustomForm> {
     try {
       final dynamic resp = await CloudFunctions.instance.call(
         functionName: 'writeTest',
+        parameters: <String, dynamic>{
+          'name': _nameController.text,
+          'description': _descriptionController.text,
+          'finished': finished,
+        },
       );
       print(resp);
+      _nameController.clear();
     } on CloudFunctionsException catch (e) {
       print('caught firebase functions exception');
       print(e.code);
