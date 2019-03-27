@@ -32,20 +32,8 @@ class EmailFieldValidator {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
 
-//    bool exist = false;
-//    Stream<QuerySnapshot> users = Firestore.instance.collection('users').where('email', isEqualTo: value).snapshots();
-////    Future<QuerySnapshot> users = Firestore.instance.collection('users').getDocuments().then(user)
-//    users.forEach( (user) {
-//      print(user.documents);
-//    });
-//    if(users.isEmpty != null){
-//      exist = true;
-//    }
-
     if (value.trim().isEmpty) {
       return 'Email is required';
-//    }else if(exist) {
-//      return 'This email already has an account';
     }else if (!regex.hasMatch(value)) {
       return 'Enter Valid Email';
     }else{
@@ -62,7 +50,7 @@ class PasswordFieldValidator {
     if(value.trim().isEmpty){
       return 'Password is required';
     }else if(!regex.hasMatch(value)){
-      return 'Must contain at least 1 number and be at least 6 characters';
+      return 'Needs to be 6 characters long, and have 1 number';
     }else{
       return null;
     }
@@ -72,7 +60,6 @@ class PasswordFieldValidator {
 class UsernameFieldValidator {
   static String validate(String value) {
     //TODO: also check if the username exists already by searching through DB
-
 
     if (value.trim().isEmpty) {
       return 'Username is required';
@@ -152,7 +139,22 @@ class _Login extends State<Login>{
         widget.onSignedIn(); // ensure the rootPage receives message we are signedIn
       }catch(e){
         setState(() {
-          _authHint = 'Problem signing in or registering account';
+          if(e.code == 'ERROR_EMAIL_ALREADY_IN_USE'){
+            _authHint = 'Email is already associated with an account';
+          }else if(e.code == 'ERROR_WRONG_PASSWORD'){
+            _authHint = 'Incorrect Password';
+          }else if(e.code == 'ERROR_USER_NOT_FOUND'){
+            _authHint = 'The email is not associated with an account';
+          }else if(e.code == 'networkError'){
+            //TODO: find this error and add it here
+            _authHint = 'There is a problem with the network right now, come back later';
+          }else{
+            if(_formType == FormType.login){
+              _authHint = 'Problem signing into account';
+            }else{
+              _authHint = 'Problem creating the new account';
+            }
+          }
         });
         print('Error: $e');
       }
@@ -370,13 +372,12 @@ class _Login extends State<Login>{
 
   Widget hintText() {
     return new Container(
-      //height: 80.0,
-//        padding: const EdgeInsets.all(32.0),
         child: new Text(
             _authHint,
             key: new Key('hint'),
-            style: new TextStyle(fontSize: 18.0, color: Colors.grey),
-            textAlign: TextAlign.center)
+            style: new TextStyle(fontSize: 16.0, color: Colors.redAccent),
+            textAlign: TextAlign.center
+        )
     );
   }
 
