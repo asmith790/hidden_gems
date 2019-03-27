@@ -1,6 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'authProvider.dart';
 import 'auth.dart';
+
+bool createUser(String uid, String email, String name, String username) {
+  var batch = Firestore.instance.batch();
+
+  var currUser = Firestore.instance.collection('users').document(uid);
+  batch.setData(currUser, {
+    'email': email,
+    'name': name,
+    'username': username,
+    'bio': '',
+    'rating': -1,
+    'picture': ''
+  });
+
+  batch.commit().then((val) {
+    return true; // successful
+  }).catchError((err){
+    print('Error: $err');
+    return false;
+  });
+}
 
 class EmailFieldValidator {
   static String validate(String value) {
@@ -9,8 +32,20 @@ class EmailFieldValidator {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
 
+//    bool exist = false;
+//    Stream<QuerySnapshot> users = Firestore.instance.collection('users').where('email', isEqualTo: value).snapshots();
+////    Future<QuerySnapshot> users = Firestore.instance.collection('users').getDocuments().then(user)
+//    users.forEach( (user) {
+//      print(user.documents);
+//    });
+//    if(users.isEmpty != null){
+//      exist = true;
+//    }
+
     if (value.trim().isEmpty) {
       return 'Email is required';
+//    }else if(exist) {
+//      return 'This email already has an account';
     }else if (!regex.hasMatch(value)) {
       return 'Enter Valid Email';
     }else{
@@ -38,8 +73,9 @@ class UsernameFieldValidator {
   static String validate(String value) {
     //TODO: also check if the username exists already by searching through DB
 
+
     if (value.trim().isEmpty) {
-      return 'Email is required';
+      return 'Username is required';
 //    }else if () {
 //      return 'Username already exists';
     }else {
@@ -80,7 +116,6 @@ class _Login extends State<Login>{
   FormType _formType = FormType.login; // initially at the login form
   String _email;
   String _password;
-  // TODO pass info to the users table in database when they create an account
   String _name;
   String _username;
 
@@ -108,6 +143,7 @@ class _Login extends State<Login>{
         }else{
           userId = await auth.createUserWithEmailAndPassword(_email, _password);
           print('Registered User: $userId');
+          createUser(userId, _email, _name, _username);
         }
         setState(() {
           _authHint = 'Signed In successfully';
