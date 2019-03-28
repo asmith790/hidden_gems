@@ -1,18 +1,24 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'firebase_firestore_service.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:uuid/uuid.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class ShowHideTextField extends StatefulWidget {
   @override
-  Post createState() {
-    return new Post();
+  NewPost createState() {
+    return new NewPost();
   }
 }
 class CustomForm extends StatefulWidget {
   @override
-  Post createState() => Post();
+  NewPost createState() => NewPost();
 }
-class Post extends State<CustomForm> {
+class NewPost extends State<CustomForm> {
   FirebaseFirestoreService db = new FirebaseFirestoreService();
   @override
   final _nameController = TextEditingController();
@@ -20,17 +26,75 @@ class Post extends State<CustomForm> {
   final _tagsController = TextEditingController();
   final _useridController = TextEditingController();
   final _pictureController = TextEditingController();
+  var uuid = new Uuid();
+  File image;
+  var imgUrl;
 
   bool _isTextFieldVisible = false;
   bool finished = true;
+
   List <String> tags = new List();
-  int rating = 1;
   Geolocator geolocator = Geolocator();
   Position userLocation;
 
+  var tags = new List<String>();
+
+  Future selectImage() async {
+    var img = await ImagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      image = img;
+    });
+  }
+
+  removeImage() {
+    setState(() {
+      image = null;
+    });
+  }
+
+  uploadGem() async {
+    //Upload Image to Storage and get download URL
+    var imgUrl = "";
+    if (image != null) {
+      String imgTitle = uuid.v1() + ".jpg";
+      final StorageReference firebaseStorRef = FirebaseStorage.instance.ref()
+          .child(imgTitle);
+      final StorageUploadTask task = firebaseStorRef.putFile(image);
+      imgUrl = await(await task.onComplete).ref.getDownloadURL();
+    }
+
+    try {
+      final dynamic resp = await CloudFunctions.instance.call(
+        functionName: 'writeTest',
+        parameters: <String, dynamic>{
+          'name': _nameController.text,
+          'description': _descriptionController.text,
+          'finished': finished,
+          'latitude': 1.0,
+          'longitude': 1.0,
+          'picture': imgUrl,
+          'tags': tags,
+          'userid': 'auser',
+        },
+      );
+      _nameController.clear();
+      _descriptionController.clear();
+      _tagsController.clear();
+      Navigator.pop(context);
+    } on CloudFunctionsException catch (e) {
+      print('caught firebase functions exception');
+      print(e.code);
+      print(e.message);
+      print(e.details);
+    } catch (e) {
+      print('caught generic exception');
+      print(e);
+    }
+  }
+
   @override
   void dispose() {
-    // Clean up the controller when the Widget is disposeed
+    // Clean up the controller when the Widget is disposed
     _nameController.dispose();
     _descriptionController.dispose();
     _tagsController.dispose();
@@ -58,33 +122,81 @@ class Post extends State<CustomForm> {
         child: Column(
           children: <Widget>[
             Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0),
-            child: TextField(
-              controller: _nameController,
-              decoration: InputDecoration(labelText: 'Name'),
-            ),
-            ),
-
-            Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0),
-            child: TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-            ),
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: TextField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Name'),
+              ),
             ),
 
             Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25.0),
-            child: TextField(
-              controller: _tagsController,
-              decoration: InputDecoration(labelText: 'Tags'),
-              onSubmitted: (text) {
-                setState(() {
-                  tags.add(text);
-                });
-              },
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: TextField(
+                controller: _descriptionController,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
             ),
+
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: TextField(
+                controller: _tagsController,
+                decoration: InputDecoration(labelText: 'Tags'),
+              ),
+              ),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: RaisedButton(
+                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                  onPressed: (){
+                  tags.add(_tagsController.text);
+                  this.setState(() {
+                    _tagsController.clear();
+                  });
+
+                  //_tagsController.clear();
+                },
+                //tooltip: 'Add tag',
+                child: new Icon(Icons.add)
+              ),
             ),
+            Text(
+              'Tags: $tags',
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Row(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 25.0, vertical: 0.0),
+                    child: FloatingActionButton(
+                        onPressed: selectImage,
+                        tooltip: 'Upload Image',
+                        child: new Icon(Icons.add_a_photo)
+                    ),
+                  ),
+
+                  image != null ? Text("Picture Uploaded!") : SizedBox(),
+
+                  image != null ? FlatButton(
+                    onPressed: removeImage,
+                    child: new Icon(
+                        Icons.cancel, color: Color.fromRGBO(255, 0, 0, 1)),
+                    //color: Color.fromRGBO(0, 0, 0, 0),
+                  ) : SizedBox(),
+
+                ]),
+
+            _isTextFieldVisible ?
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0),
+              child: TextField(
+                controller: _gpsController,
+                decoration: InputDecoration(labelText: 'GPS'),
+              ),
+            ) : SizedBox(),
 
             _isTextFieldVisible ?
             Padding(
@@ -93,7 +205,7 @@ class Post extends State<CustomForm> {
                 controller: _useridController,
                 decoration: InputDecoration(labelText: 'UserId'),
               ),
-            ): SizedBox(),
+            ) : SizedBox(),
 
             _isTextFieldVisible ?
             Padding(
@@ -102,13 +214,13 @@ class Post extends State<CustomForm> {
                 controller: _pictureController,
                 decoration: InputDecoration(labelText: 'Picture'),
               ),
-            ): SizedBox(),
+            ) : SizedBox(),
+
 
             SizedBox(
               height: 25.0,
             ),
 
-            Padding(padding: new EdgeInsets.all(5.0)),
             RaisedButton(
               child: Text('Add'),
               onPressed: () {
@@ -118,16 +230,11 @@ class Post extends State<CustomForm> {
                   });
                 });
                 finished = true;
-                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude, userLocation.latitude, _useridController.text, _pictureController.text, finished, rating).then((_) {
-                    _nameController.clear();
-                    _descriptionController.clear();
-                    _tagsController.clear();
+                uploadGem();
                   });
-
               },
             ),
 
-            Padding(padding: new EdgeInsets.all(5.0)),
             RaisedButton(
               child: Text('Save as Draft'),
               onPressed: () {
@@ -138,11 +245,7 @@ class Post extends State<CustomForm> {
                 });
 
                 finished = false;
-                db.createGem(_nameController.text, _descriptionController.text, tags, userLocation.longitude , userLocation.latitude, _useridController.text, _pictureController.text, finished, rating).then((_) {
-                  _nameController.clear();
-                  _descriptionController.clear();
-                  _tagsController.clear();
-                });
+                uploadGem();
               },
             ),
           ],
@@ -150,5 +253,4 @@ class Post extends State<CustomForm> {
       ),
     );
   }
-
 }

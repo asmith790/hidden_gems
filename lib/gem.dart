@@ -37,6 +37,7 @@ class Gem {
   bool get finished => _finished;
   int get rating => _rating;
 
+
   Map<String, dynamic> toMap() {
     var map = new Map<String, dynamic>();
     if (_id != null) {
@@ -62,6 +63,7 @@ class Gem {
     this._tags = map['tags'];
     this._longitude = map['longitude'];
     this._latitude = map['latitude'];
+
     this._userid = map['userid'];
     this._picture = map['picture'];
     this._finished = map['finished'];
