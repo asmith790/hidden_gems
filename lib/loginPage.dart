@@ -27,7 +27,6 @@ bool createUser(String uid, String email, String name, String username) {
 
 class EmailFieldValidator {
   static String validate(String value) {
-    //TODO: check if the email is already associated with an account, if it is, tell user to sign in
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = new RegExp(pattern);
@@ -58,16 +57,13 @@ class PasswordFieldValidator {
 }
 
 class UsernameFieldValidator {
-  static String validate(String value) {
-    //TODO: also check if the username exists already by searching through DB
-
+  static String validate(String value){
     if (value.trim().isEmpty) {
       return 'Username is required';
-//    }else if () {
-//      return 'Username already exists';
-    }else {
-      return null;
+    }else if (value.length < 2) {
+      return 'Username must be at least 2 characters';
     }
+    return null;
   }
 }
 
@@ -107,6 +103,7 @@ class _Login extends State<Login>{
   String _username;
 
   String _authHint = '';
+  bool _isLoggedIn = false;
 
   bool validateAndSave(){
     final form = formKey.currentState; // gets the form state
@@ -123,20 +120,39 @@ class _Login extends State<Login>{
       try{
         final BaseAuth auth = AuthProvider.of(context).auth;
         String userId;
-        if(_formType == FormType.login){
+        bool exist = false;
+
+        if(_formType == FormType.register){
+          final QuerySnapshot result = await Firestore.instance.collection('users').where('username', isEqualTo: _username)
+              .limit(1).getDocuments();
+          final List <DocumentSnapshot> documents = result.documents;
+          if(documents.length == 1){
+            exist = true;
+          }
+        }
+
+        if(_formType == FormType.login && !exist){
           userId = await auth.signInWithEmailAndPassword(_email, _password);
           print('SignedIn: $userId');
+          _isLoggedIn = true;
 
-        }else{
+        }else if (_formType == FormType.register && !exist){
           userId = await auth.createUserWithEmailAndPassword(_email, _password);
           print('Registered User: $userId');
           createUser(userId, _email, _name, _username);
+          _isLoggedIn = true;
         }
+
         setState(() {
-          _authHint = 'Signed In successfully';
+          if(_isLoggedIn) {
+            _authHint = 'Signed In successfully';
+            // after we either sign in or create an account, we want to be signed in
+            widget.onSignedIn(); // ensure the rootPage receives message we are signedIn
+          }
+          if(exist){
+            _authHint = 'Username is already taken';
+          }
         });
-        // after we either sign in or create an account, we want to be signed in
-        widget.onSignedIn(); // ensure the rootPage receives message we are signedIn
       }catch(e){
         setState(() {
           if(e.code == 'ERROR_EMAIL_ALREADY_IN_USE'){
@@ -145,9 +161,8 @@ class _Login extends State<Login>{
             _authHint = 'Incorrect Password';
           }else if(e.code == 'ERROR_USER_NOT_FOUND'){
             _authHint = 'The email is not associated with an account';
-          }else if(e.code == 'networkError'){
-            //TODO: find this error and add it here
-            _authHint = 'There is a problem with the network right now, come back later';
+          }else if(e.code == 'ERROR_NETWORK_REQUEST_FAILED'){
+            _authHint = 'There is a problem with the network';
           }else{
             if(_formType == FormType.login){
               _authHint = 'Problem signing into account';
