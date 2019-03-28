@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'firebase_firestore_service.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -23,7 +24,6 @@ class NewPost extends State<CustomForm> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _tagsController = TextEditingController();
-  final _gpsController = TextEditingController();
   final _useridController = TextEditingController();
   final _pictureController = TextEditingController();
   var uuid = new Uuid();
@@ -32,6 +32,11 @@ class NewPost extends State<CustomForm> {
 
   bool _isTextFieldVisible = false;
   bool finished = true;
+
+  List <String> tags = new List();
+  Geolocator geolocator = Geolocator();
+  Position userLocation;
+
   var tags = new List<String>();
 
   Future selectImage() async {
@@ -93,10 +98,18 @@ class NewPost extends State<CustomForm> {
     _nameController.dispose();
     _descriptionController.dispose();
     _tagsController.dispose();
-    _gpsController.dispose();
-    _useridController.dispose();
-    _pictureController.dispose();
     super.dispose();
+  }
+
+  Future<Position> locateUser() async {
+    return Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((location) {
+      if (location != null) {
+        print("Location: ${location.latitude},${location.longitude}");
+      }
+      return location;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -210,16 +223,27 @@ class NewPost extends State<CustomForm> {
 
             RaisedButton(
               child: Text('Add'),
-              onPressed: (){
+              onPressed: () {
+                locateUser().then((value) {
+                  setState(() {
+                    userLocation = value;
+                  });
+                });
                 finished = true;
-                //tags.add(_tagsController.text);
                 uploadGem();
+                  });
               },
             ),
 
             RaisedButton(
               child: Text('Save as Draft'),
               onPressed: () {
+                locateUser().then((value) {
+                  setState(() {
+                    userLocation = value;
+                  });
+                });
+
                 finished = false;
                 uploadGem();
               },
