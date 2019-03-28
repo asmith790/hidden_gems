@@ -37,8 +37,6 @@ class NewPost extends State<CustomForm> {
   Geolocator geolocator = Geolocator();
   Position userLocation;
 
-  var tags = new List<String>();
-
   Future selectImage() async {
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
     setState(() {
@@ -70,8 +68,8 @@ class NewPost extends State<CustomForm> {
           'name': _nameController.text,
           'description': _descriptionController.text,
           'finished': finished,
-          'latitude': 1.0,
-          'longitude': 1.0,
+          'latitude': userLocation.latitude,
+          'longitude': userLocation.longitude,
           'picture': imgUrl,
           'tags': tags,
           'userid': 'auser',
@@ -193,15 +191,6 @@ class NewPost extends State<CustomForm> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
-                controller: _gpsController,
-                decoration: InputDecoration(labelText: 'GPS'),
-              ),
-            ) : SizedBox(),
-
-            _isTextFieldVisible ?
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
                 controller: _useridController,
                 decoration: InputDecoration(labelText: 'UserId'),
               ),
@@ -227,13 +216,11 @@ class NewPost extends State<CustomForm> {
                 locateUser().then((value) {
                   setState(() {
                     userLocation = value;
+                    finished = true;
+                    uploadGem();
                   });
                 });
-                finished = true;
-                uploadGem();
-                  });
-              },
-            ),
+                  }),
 
             RaisedButton(
               child: Text('Save as Draft'),
@@ -241,11 +228,10 @@ class NewPost extends State<CustomForm> {
                 locateUser().then((value) {
                   setState(() {
                     userLocation = value;
+                    finished = false;
+                    uploadGem();
                   });
                 });
-
-                finished = false;
-                uploadGem();
               },
             ),
           ],
