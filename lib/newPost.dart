@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'firebase_firestore_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -19,7 +18,6 @@ class CustomForm extends StatefulWidget {
   NewPost createState() => NewPost();
 }
 class NewPost extends State<CustomForm> {
-  FirebaseFirestoreService db = new FirebaseFirestoreService();
   @override
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -216,9 +214,9 @@ class NewPost extends State<CustomForm> {
                 locateUser().then((value) {
                   setState(() {
                     userLocation = value;
-                    finished = true;
-                    uploadGem();
                   });
+                  finished = true;
+                  uploadGem();
                 });
                   }),
 
@@ -228,9 +226,9 @@ class NewPost extends State<CustomForm> {
                 locateUser().then((value) {
                   setState(() {
                     userLocation = value;
-                    finished = false;
-                    uploadGem();
                   });
+                  finished = false;
+                  uploadGem();
                 });
               },
             ),
