@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'firebase_firestore_service.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
@@ -18,12 +18,10 @@ class CustomForm extends StatefulWidget {
   NewPost createState() => NewPost();
 }
 class NewPost extends State<CustomForm> {
-  FirebaseFirestoreService db = new FirebaseFirestoreService();
   @override
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _tagsController = TextEditingController();
-  final _gpsController = TextEditingController();
   final _useridController = TextEditingController();
   final _pictureController = TextEditingController();
   var uuid = new Uuid();
@@ -32,7 +30,10 @@ class NewPost extends State<CustomForm> {
 
   bool _isTextFieldVisible = false;
   bool finished = true;
-  var tags = new List<String>();
+
+  List <String> tags = new List();
+  Geolocator geolocator = Geolocator();
+  Position userLocation;
 
   Future selectImage() async {
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -65,8 +66,8 @@ class NewPost extends State<CustomForm> {
           'name': _nameController.text,
           'description': _descriptionController.text,
           'finished': finished,
-          'latitude': 1.0,
-          'longitude': 1.0,
+          'latitude': userLocation.latitude,
+          'longitude': userLocation.longitude,
           'picture': imgUrl,
           'tags': tags,
           'userid': 'auser',
@@ -93,10 +94,18 @@ class NewPost extends State<CustomForm> {
     _nameController.dispose();
     _descriptionController.dispose();
     _tagsController.dispose();
-    _gpsController.dispose();
-    _useridController.dispose();
-    _pictureController.dispose();
     super.dispose();
+  }
+
+  Future<Position> locateUser() async {
+    return Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((location) {
+      if (location != null) {
+        print("Location: ${location.latitude},${location.longitude}");
+      }
+      return location;
+    });
   }
 
   Widget build(BuildContext context) {
@@ -180,15 +189,6 @@ class NewPost extends State<CustomForm> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
-                controller: _gpsController,
-                decoration: InputDecoration(labelText: 'GPS'),
-              ),
-            ) : SizedBox(),
-
-            _isTextFieldVisible ?
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
                 controller: _useridController,
                 decoration: InputDecoration(labelText: 'UserId'),
               ),
@@ -210,18 +210,26 @@ class NewPost extends State<CustomForm> {
 
             RaisedButton(
               child: Text('Add'),
-              onPressed: (){
-                finished = true;
-                //tags.add(_tagsController.text);
-                uploadGem();
-              },
-            ),
+              onPressed: () {
+                locateUser().then((value) {
+                  setState(() {
+                    userLocation = value;
+                  });
+                  finished = true;
+                  uploadGem();
+                });
+                  }),
 
             RaisedButton(
               child: Text('Save as Draft'),
               onPressed: () {
-                finished = false;
-                uploadGem();
+                locateUser().then((value) {
+                  setState(() {
+                    userLocation = value;
+                  });
+                  finished = false;
+                  uploadGem();
+                });
               },
             ),
           ],
