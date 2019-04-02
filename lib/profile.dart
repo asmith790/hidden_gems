@@ -5,16 +5,56 @@ import 'postView.dart';
 import 'auth.dart';
 import 'authProvider.dart';
 
-class Profile extends StatelessWidget {
+
+class Profile extends StatefulWidget {
   const Profile({this.onSignedOut});
   final VoidCallback onSignedOut;
+
+  @override
+  State<StatefulWidget> createState() => new _Profile();
+}
+
+class _Profile extends State<Profile> {
+  String _userId;
+  String _email = ' ';
+  String _username = ' ';
+  String _name = ' ';
+  String _bio = ' ';
+  int _rating = 0;
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final BaseAuth auth = AuthProvider.of(context).auth;
+    //once currentUser() returns a user since it is a Future, then we can do something
+    auth.currentUser().then((userId) {
+      _userId = userId;
+      print('UserId: $userId');
+      _getProfileInfo();
+    });
+  }
+
+  Future<void> _getProfileInfo() async {
+    final DocumentReference userInfo = Firestore.instance.collection('users').document(_userId);
+    userInfo.get().then((doc){
+      if(doc.exists){
+        print(doc.data);
+        _email = doc.data['email'];
+        _username = doc.data['username'];
+        _name = doc.data['name'];
+        _bio = doc.data['bio'];
+        _rating = doc.data['rating'];
+      }
+    });
+  }
 
   // parameter is context because the inherited widget auth needs it
   Future<void> _signOut(BuildContext context) async{
     try{
       final BaseAuth auth = AuthProvider.of(context).auth;
       await auth.signOut();
-      onSignedOut(); // call voidCallback function
+      widget.onSignedOut(); // call voidCallback function
       if(Navigator.canPop(context)) {
         Navigator.of(context).popUntil((route) => route.isFirst);
       }
@@ -58,9 +98,10 @@ class Profile extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text('Name Test'),
-                      Text('Username'),
-                      Text('Rating'),
+                      // TODO: display the users info here
+                      Text(_name),
+                      Text(_username),
+                      Text(_email),
                     ],
                   ),
                 ),
@@ -99,69 +140,9 @@ class Profile extends StatelessWidget {
             )
           ]
       ),
-      body: Column(
-    children: <Widget>[
-      StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('posts').where("userid", isEqualTo: "mel123").snapshots(), //TODO:Change username to logged in user
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) return new Text('${snapshot.error}');
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return new Container(child: userInfo());
-            default:
-              return new Column(
-                  children: <Widget>[
-                    userInfo(),
-                    ListView(
-                shrinkWrap: true,
-                children:
-                snapshot.data.documents.map((DocumentSnapshot document) {
-                  return new ListTile(
-                    title: new Text(
-                      document['name'],
-                      style: TextStyle(
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    subtitle: new Row(children: <Widget>[
-                      new Text.rich(
-                        TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: document['description'],
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                )),
-                            TextSpan(
-                                text: '\n${document['tags'].toString()}',
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    ]),
-                    isThreeLine: true,
-                    leading: Column(
-                      children: <Widget>[
-                        getPicture(document['picture']),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        new MaterialPageRoute(builder: (context) => new PostView(id: document.documentID)),
-                      );
-                    },
-                  );
-                }).toList(),
-              )]);
-          }
-        },
+      body: new ListView.builder(
+          itemBuilder: null
       ),
-      ]),
       drawer: MyDrawer(),
     );
   }
