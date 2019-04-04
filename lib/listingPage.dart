@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navBar.dart';
 import 'postView.dart';
-import 'auth.dart';
-import 'rootPage.dart';
+import 'newPost.dart';
 
 class ListingPage extends StatelessWidget {
 
@@ -90,6 +89,25 @@ class ListingPage extends StatelessWidget {
         },
       ),
       drawer: MyDrawer(),
+      floatingActionButton: FloatingActionButton.extended(
+          onPressed: () { Navigator.push(
+      context,
+      new MaterialPageRoute(builder: (context) => new CustomForm()),
+      );
+      },
+          icon: Icon(Icons.add),
+          label: Text("New Gem")),
+//      persistentFooterButtons: <Widget>[
+//        ButtonBar(
+//          mainAxisSize: MainAxisSize.max,
+//          alignment: MainAxisAlignment.center,
+//          children: <Widget>[
+//            RaisedButton(
+//              child: new Text("New Gem"),
+//            )
+//          ],
+//        ),
+//      ],
     );
   }
 }
