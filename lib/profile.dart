@@ -63,6 +63,70 @@ class _Profile extends State<Profile> {
     }
   }
 
+  Widget _buildFullName() {
+    TextStyle _nameTextStyle = TextStyle(
+      fontFamily: 'Roboto',
+      color: Colors.black,
+      fontSize: 28.0,
+      fontWeight: FontWeight.w600,
+    );
+
+    return Text(
+      _name,
+      style: _nameTextStyle,
+    );
+  }
+
+  Widget _buildBio(BuildContext context) {
+    TextStyle bioTextStyle = TextStyle(
+      fontFamily: 'Spectral',
+      fontWeight: FontWeight.w400,//try changing weight to w500 if not thin
+      fontStyle: FontStyle.italic,
+      color: Color(0xFF799497),
+      fontSize: 16.0,
+    );
+
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      padding: EdgeInsets.all(8.0),
+      child: Text(
+        _bio,
+        textAlign: TextAlign.center,
+        style: bioTextStyle,
+      ),
+    );
+  }
+
+  Widget _buildSeparator(Size screenSize) {
+    return Container(
+      width: screenSize.width / 1.6,
+      height: 2.0,
+      color: Colors.black54,
+      margin: EdgeInsets.only(top: 4.0),
+    );
+  }
+
+  Widget _buildProfileImage() {
+    return Center(
+      child: Container(
+        width: 140.0,
+        height: 140.0,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/gem.png'),
+            fit: BoxFit.cover,
+          ),
+          borderRadius: BorderRadius.circular(80.0),
+          border: Border.all(
+            color: Colors.white,
+            width: 10.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+
   Image getPicture(String url){
     if(url == ""){
       return Image.asset(
@@ -79,48 +143,7 @@ class _Profile extends State<Profile> {
     );
   }
 
-  Center userInfo(){
-    return Center(
-      child: Column(
-        children: <Widget>[
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: FittedBox(
-                    fit: BoxFit
-                        .contain, // otherwise the logo will be tiny
-                    child: const FlutterLogo(),
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      // TODO: display the users info here
-                      Text(_name),
-                      Text(_username),
-                      Text(_email),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(bottom: 20)
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('My Gems'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -140,8 +163,44 @@ class _Profile extends State<Profile> {
             )
           ]
       ),
-      body: new ListView.builder(
-          itemBuilder: null
+      body: Center(
+        child: Column(
+          children: <Widget>[
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: _buildProfileImage(),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        _buildFullName(),
+                        Text(_username)
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+                padding: EdgeInsets.only(bottom: 20)
+            ),
+            _buildBio(context),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+//                Text('My Gems'),
+//                StreamBuilder<QuerySnapshot>(
+//                stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _userId).snapshots(),
+//                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+//
+              ]
+            ),
+          ],
+        ),
       ),
       drawer: MyDrawer(),
     );
