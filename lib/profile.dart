@@ -20,6 +20,7 @@ class _Profile extends State<Profile> {
   String _username = ' ';
   String _name = ' ';
   String _bio = ' ';
+  String _picture = ' ';
   int _rating = 0;
 
 
@@ -45,6 +46,7 @@ class _Profile extends State<Profile> {
         _name = doc.data['name'];
         _bio = doc.data['bio'];
         _rating = doc.data['rating'];
+        _picture = doc.data['picture'];
       }
     });
   }
@@ -111,23 +113,45 @@ class _Profile extends State<Profile> {
   }
 
   Widget _buildProfileImage() {
-    return Center(
-      child: Container(
-        width: 140.0,
-        height: 140.0,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/gem.png'),
-            fit: BoxFit.scaleDown,
-          ),
-          borderRadius: BorderRadius.circular(80.0),
-          border: Border.all(
-            color: Colors.white,
-            width: 10.0,
+    if(_picture.length > 1){
+      return Center(
+        child: Container(
+          width: 140.0,
+          height: 140.0,
+          decoration: BoxDecoration(
+            // TODO: grab profile image from cloud storage and put here
+            image: DecorationImage(
+              image: AssetImage('assets/gem.png'),
+              fit: BoxFit.scaleDown,
+            ),
+            borderRadius: BorderRadius.circular(80.0),
+            border: Border.all(
+              color: Colors.white,
+              width: 10.0,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }else{
+      // if user doesn't have a profile picture in Database
+      return Center(
+        child: Container(
+          width: 140.0,
+          height: 140.0,
+          child: Icon(
+            Icons.person,
+            size: 60.0,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(80.0),
+            border: Border.all(
+              color: Colors.white,
+              width: 10.0,
+            ),
+          ),
+        ),
+      );
+    }
   }
 
 
@@ -140,6 +164,23 @@ class _Profile extends State<Profile> {
           color: Colors.amber,
         );
       }),
+    );
+  }
+
+  /// getting picture for gems
+  Image getPicture(String url){
+    if(url == ""){
+      return Image.asset(
+        //Would become a photo
+        'assets/gem.png',
+        width: 76.0,
+        height: 45,
+      );
+    }
+    return Image.network(
+      //Would become a photo
+      url,
+      width: 76.0,
     );
   }
 
@@ -179,6 +220,10 @@ class _Profile extends State<Profile> {
         Padding(
             padding: EdgeInsets.only(bottom: 20)
         ),
+        Divider(
+          height: 2.0,
+          color: Colors.grey,
+        ),
         // Displaying user Gems
         StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _username).snapshots(),
@@ -193,15 +238,41 @@ class _Profile extends State<Profile> {
                   children: snapshot.data.documents.map((DocumentSnapshot doc){
                     for(int i = 0; i < doc.data['name'].length; i++){
                       print(doc.data['name']);
-                      return ListTile(
-                        title: Text(
-                          doc.data['name'],
-                          style: TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                      /// details about gems the user has posted
+                      return Column(
+                        children: <Widget>[
+                          ListTile(
+                            leading: getPicture(doc.data['picture']),
+                            title: new Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                _titleGems(doc),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    _rateGems(doc),
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 5)
+                                    ),
+                                    _thumbs(doc),
+                                  ],
+                                )
+                              ],
+                            ),
+                            subtitle: _descGems(doc),
+                            isThreeLine: true,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID)),
+                              );
+                            },
                           ),
-                        ),
+                          Divider(
+                            height: 2.0,
+                            color: Colors.grey,
+                          ),
+                        ],
                       );
                     }
                   }).toList(),
@@ -210,6 +281,56 @@ class _Profile extends State<Profile> {
           },
         ),
       ],
+    );
+  }
+
+  Icon _thumbs(DocumentSnapshot doc){
+    int rating = doc.data['rating'];
+    if(rating < 0){
+      return Icon(
+        Icons.thumb_down,
+        color: Colors.blue,
+        size: 20.0,
+      );
+    }else{
+      return Icon(
+        Icons.thumb_up,
+        color: Colors.blue,
+        size: 20.0,
+      );
+    }
+  }
+
+  Text _titleGems(DocumentSnapshot doc){
+    return Text(
+      doc.data['name'],
+      style: TextStyle(
+        fontSize: 22.0,
+        fontWeight: FontWeight.bold,
+        color: Colors.blue,
+      ),
+    );
+  }
+
+  Text _descGems(DocumentSnapshot doc){
+    return Text(
+      doc.data['description'],
+      style: TextStyle(
+        fontSize: 16.0,
+        fontWeight: FontWeight.w400,
+        color: Colors.black38
+      ),
+    );
+  }
+
+  Text _rateGems(DocumentSnapshot doc){
+    return Text(
+      doc.data['rating'].toString(),
+      style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.w500,
+          color: Colors.black38
+      ),
     );
   }
 
