@@ -143,6 +143,76 @@ class _Profile extends State<Profile> {
     );
   }
 
+  Widget _buildPage(){
+    return Column(
+      children: <Widget>[
+        // top portion
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                //TODO: able to add a profile image
+                child: _buildProfileImage(),
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    _buildName(),
+                    _buildUsername(),
+                    Padding(
+                        padding: EdgeInsets.only(bottom: 10)
+                    ),
+                    _buildRating(_rating)
+                    //TODO: add rating here
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.only(bottom: 20)
+        ),
+        _buildBio(context),
+        Padding(
+            padding: EdgeInsets.only(bottom: 20)
+        ),
+        // Displaying user Gems
+        StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _username).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) return new Text('${snapshot.error}');
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return new Center(child: new CircularProgressIndicator());
+              default:
+                return ListView(
+                  shrinkWrap: true,
+                  children: snapshot.data.documents.map((DocumentSnapshot doc){
+                    for(int i = 0; i < doc.data['name'].length; i++){
+                      print(doc.data['name']);
+                      return ListTile(
+                        title: Text(
+                          doc.data['name'],
+                          style: TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      );
+                    }
+                  }).toList(),
+                );
+            }
+          },
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -162,73 +232,28 @@ class _Profile extends State<Profile> {
           ]
       ),
       body: Center(
-        child: Column(
-          children: <Widget>[
-            // top portion
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    //TODO: able to add a profile image
-                    child: _buildProfileImage(),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        _buildName(),
-                        _buildUsername(),
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 10)
-                        ),
-                        _buildRating(_rating)
-                        //TODO: add rating here
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.only(bottom: 20)
-            ),
-            _buildBio(context),
-            Padding(
-                padding: EdgeInsets.only(bottom: 20)
-            ),
-            // Displaying user Gems
-            StreamBuilder<QuerySnapshot>(
-                stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _username).snapshots(),
-                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) return new Text('${snapshot.error}');
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
-                      return new Center(child: new CircularProgressIndicator());
-                    default:
-                      return ListView(
-                          shrinkWrap: true,
-                          children: snapshot.data.documents.map((DocumentSnapshot doc){
-                              for(int i = 0; i < doc.data['name'].length; i++){
-                                print(doc.data['name']);
-                                return ListTile(
-                                  title: Text(
-                                    doc.data['name'],
-                                    style: TextStyle(
-                                      fontSize: 22.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.blue,
-                                    ),
-                                  ),
-                                );
-                              }
-                          }).toList(),
-                      );
-                  }
-                  },
-            ),
-          ],
-        ),
+        child: FutureBuilder<void>(
+          future: Firestore.instance.collection('users').document(_userId).get().then((doc){
+                        if(doc.exists){
+                          print(doc.data);
+                          _email = doc.data['email'];
+                          _username = doc.data['username'];
+                          _name = doc.data['name'];
+                          _bio = doc.data['bio'];
+                          _rating = doc.data['rating'];
+                        }}),
+          builder: (context, snapshot){
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return new Center(child: new CircularProgressIndicator());
+            }else if(snapshot.connectionState == ConnectionState.done){
+              if(snapshot.hasError){
+                return new Text('${snapshot.error}');
+              }else{
+                return _buildPage();
+              }
+            }
+          }
+        )
       ),
       drawer: MyDrawer(),
     );
