@@ -63,24 +63,37 @@ class _Profile extends State<Profile> {
     }
   }
 
-  Widget _buildFullName() {
+  Widget _buildName() {
     TextStyle _nameTextStyle = TextStyle(
       fontFamily: 'Roboto',
       color: Colors.black,
       fontSize: 28.0,
       fontWeight: FontWeight.w600,
     );
-
     return Text(
       _name,
       style: _nameTextStyle,
     );
   }
 
+  Widget _buildUsername(){
+    TextStyle _userNameTextStyle = TextStyle(
+      fontFamily: 'Roboto',
+      color: Colors.black38,
+      fontSize: 18.0,
+      fontWeight: FontWeight.w400,
+    );
+
+    return Text(
+      _username,
+      style: _userNameTextStyle,
+    );
+  }
+
   Widget _buildBio(BuildContext context) {
     TextStyle bioTextStyle = TextStyle(
       fontFamily: 'Spectral',
-      fontWeight: FontWeight.w400,//try changing weight to w500 if not thin
+      fontWeight: FontWeight.w400,
       fontStyle: FontStyle.italic,
       color: Color(0xFF799497),
       fontSize: 16.0,
@@ -97,15 +110,6 @@ class _Profile extends State<Profile> {
     );
   }
 
-  Widget _buildSeparator(Size screenSize) {
-    return Container(
-      width: screenSize.width / 1.6,
-      height: 2.0,
-      color: Colors.black54,
-      margin: EdgeInsets.only(top: 4.0),
-    );
-  }
-
   Widget _buildProfileImage() {
     return Center(
       child: Container(
@@ -114,7 +118,7 @@ class _Profile extends State<Profile> {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/gem.png'),
-            fit: BoxFit.cover,
+            fit: BoxFit.scaleDown,
           ),
           borderRadius: BorderRadius.circular(80.0),
           border: Border.all(
@@ -127,23 +131,17 @@ class _Profile extends State<Profile> {
   }
 
 
-  Image getPicture(String url){
-    if(url == ""){
-      return Image.asset(
-        //Would become a photo
-        'assets/gem.png',
-        width: 70.0,
-        height: 45,
-      );
-    }
-    return Image.network(
-      //Would become a photo
-      url,
-      width: 76.0,
+  Widget _buildRating(int rating){
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (index) {
+        return Icon(
+          index < rating ? Icons.star : Icons.star_border,
+          color: Colors.amber,
+        );
+      }),
     );
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -166,19 +164,26 @@ class _Profile extends State<Profile> {
       body: Center(
         child: Column(
           children: <Widget>[
+            // top portion
             IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
+                    //TODO: able to add a profile image
                     child: _buildProfileImage(),
                   ),
                   Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        _buildFullName(),
-                        Text(_username)
+                        _buildName(),
+                        _buildUsername(),
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 10)
+                        ),
+                        _buildRating(_rating)
+                        //TODO: add rating here
                       ],
                     ),
                   ),
@@ -189,15 +194,38 @@ class _Profile extends State<Profile> {
                 padding: EdgeInsets.only(bottom: 20)
             ),
             _buildBio(context),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-//                Text('My Gems'),
-//                StreamBuilder<QuerySnapshot>(
-//                stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _userId).snapshots(),
-//                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-//
-              ]
+            Padding(
+                padding: EdgeInsets.only(bottom: 20)
+            ),
+            // Displaying user Gems
+            StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _username).snapshots(),
+                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) return new Text('${snapshot.error}');
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
+                      return new Center(child: new CircularProgressIndicator());
+                    default:
+                      return ListView(
+                          shrinkWrap: true,
+                          children: snapshot.data.documents.map((DocumentSnapshot doc){
+                              for(int i = 0; i < doc.data['name'].length; i++){
+                                print(doc.data['name']);
+                                return ListTile(
+                                  title: Text(
+                                    doc.data['name'],
+                                    style: TextStyle(
+                                      fontSize: 22.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                );
+                              }
+                          }).toList(),
+                      );
+                  }
+                  },
             ),
           ],
         ),
