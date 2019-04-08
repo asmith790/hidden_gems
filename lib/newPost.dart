@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:geoflutterfire/geoflutterfire.dart';
 
 class ShowHideTextField extends StatefulWidget {
   @override
@@ -35,8 +34,6 @@ class NewPost extends State<CustomForm> {
   List <String> tags = new List();
   Geolocator geolocator = Geolocator();
   Position userLocation;
-  Geoflutterfire geo = Geoflutterfire();
-  GeoFirePoint point;
 
   Future selectImage() async {
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -51,14 +48,7 @@ class NewPost extends State<CustomForm> {
     });
   }
 
-  GeoFirePoint _addGeoPoint() {
-    Geoflutterfire geo = Geoflutterfire();
-    GeoFirePoint point = geo.point(latitude: userLocation.latitude, longitude: userLocation.longitude);
-    return point;
-  }
-
   uploadGem() async {
-    _addGeoPoint();
     //Upload Image to Storage and get download URL
     var imgUrl = "";
     if (image != null) {
@@ -76,9 +66,8 @@ class NewPost extends State<CustomForm> {
           'name': _nameController.text,
           'description': _descriptionController.text,
           'finished': finished,
-//          'latitude': userLocation.latitude,
-//          'longitude': userLocation.longitude,
-          'point': point.data,
+          'latitude': userLocation.latitude,
+          'longitude': userLocation.longitude,
           'picture': imgUrl,
           'tags': tags,
           'userid': 'auser',
@@ -118,7 +107,6 @@ class NewPost extends State<CustomForm> {
       return location;
     });
   }
-
 
 
   Widget build(BuildContext context) {
@@ -162,8 +150,6 @@ class NewPost extends State<CustomForm> {
                   this.setState(() {
                     _tagsController.clear();
                   });
-
-                  //_tagsController.clear();
                 },
                 //tooltip: 'Add tag',
                 child: new Icon(Icons.add)
@@ -227,8 +213,6 @@ class NewPost extends State<CustomForm> {
                 locateUser().then((value) {
                   setState(() {
                     userLocation = value;
-                    point = geo.point(latitude: userLocation.latitude, longitude: userLocation.longitude);
-                    print(point.data);
                   });
                   finished = true;
                   uploadGem();
@@ -241,8 +225,6 @@ class NewPost extends State<CustomForm> {
                 locateUser().then((value) {
                   setState(() {
                     userLocation = value;
-                    point = geo.point(latitude: userLocation.latitude, longitude: userLocation.longitude);
-                    print(point.data);
                   });
                   finished = false;
                   uploadGem();
