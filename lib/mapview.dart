@@ -9,17 +9,16 @@ class MapsDemo extends StatefulWidget {
 class MapV extends State<MapsDemo> {
   @override
   GoogleMapController mapController;
+  //static const LatLng _center = const LatLng(29.6516, -82.3248);
+  static final CameraPosition _center = CameraPosition(
+    target: LatLng(29.6516, -82.3248),
+    zoom: 30,
+  );
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(title: Text('Hidden Gems')),
+      appBar: AppBar(title: Text('Map View')),
       body: ListView(
         children: <Widget>[
-//          Row(
-//            mainAxisAlignment: MainAxisAlignment.end,
-//            children: <Widget>[
-//              Text('Top of Map'),
-//            ],
-//          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
@@ -29,6 +28,10 @@ class MapV extends State<MapsDemo> {
                   height: 600.0,
                   child: GoogleMap(
                     onMapCreated: _onMapCreated,
+                    options: GoogleMapOptions(
+                      scrollGesturesEnabled: true,
+                      cameraPosition: _center,
+                    ),
                   ),
                 ),
               )
