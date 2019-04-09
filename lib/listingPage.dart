@@ -93,4 +93,3 @@ class ListingPage extends StatelessWidget {
     );
   }
 }
-
