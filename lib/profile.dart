@@ -34,6 +34,7 @@ class _Profile extends State<Profile> {
       _userId = userId;
       print('UserId: $userId');
     });
+    //TODO: add initially load info back, it's breaking now??
   }
 
   /// Button for user to sign out of their account

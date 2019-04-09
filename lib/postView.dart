@@ -7,7 +7,6 @@ import 'voteTracker.dart';
 class PostView extends StatelessWidget {
   final String id;
   PostView({this.id});
-  int count;
   List<Post> posts;
 
   Widget build(BuildContext context) {
