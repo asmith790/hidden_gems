@@ -82,7 +82,6 @@ class _ProfileEdit extends State<ProfileEdit> {
   }
 
   File image;
-  var _imgUrl;
 
   Future selectImage() async {
     var img = await ImagePicker.pickImage(source: ImageSource.gallery);

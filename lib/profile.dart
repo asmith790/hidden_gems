@@ -325,7 +325,7 @@ class _Profile extends State<Profile> {
           height: 140.0,
           decoration: BoxDecoration(
             image: DecorationImage(
-              fit: BoxFit.fill,
+              fit: BoxFit.fitHeight,
               image: NetworkImage(_picture),
             ),
             borderRadius: BorderRadius.circular(80.0),
