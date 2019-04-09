@@ -116,7 +116,7 @@ class _Profile extends State<Profile> {
               if(snapshot.hasError){
                 return new Text('${snapshot.error}');
               }else{
-                return _buildPage();
+                return _buildPage(context);
               }
             }
           }
@@ -127,8 +127,8 @@ class _Profile extends State<Profile> {
   }
 
   /// Widget that creates the whole page after fetches information
-  Widget _buildPage(){
-    return Column(
+  Widget _buildPage(BuildContext context){
+    return Scrollbar( child: Column(
       children: <Widget>[
         // top portion
         _simplePadding(),
@@ -171,14 +171,14 @@ class _Profile extends State<Profile> {
               default:
                 return ListView(
                   shrinkWrap: true,
-                  children: snapshot.data.documents.map((DocumentSnapshot doc){
+                  children: ListTile.divideTiles(
+                    context: context,
+                    tiles: snapshot.data.documents.map((DocumentSnapshot doc){
                     for(int i = 0; i < doc.data['name'].length; i++){
                       String curr = doc.data['name'];
                       print(curr);
                       /// details about gems the user has posted
-                      return Column(
-                        children: <Widget>[
-                          ListTile(
+                      return ListTile(
                             leading: getPicture(doc.data['picture']),
                             title: _titleGems(doc),
                             subtitle: _descGems(doc),
@@ -235,19 +235,21 @@ class _Profile extends State<Profile> {
                                 new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID)),
                               );
                             },
-                          ),
-                          _divider(),
-                        ],
                       );
                     }
-                  }).toList(),
+                  }),
+                ).toList(),
                 );
             }
           },
         ),
         _simplePadding(),
         _editButton(),
+        Padding(
+            padding: EdgeInsets.only(bottom: 25)
+        )
       ],
+    )
     );
   }
 
