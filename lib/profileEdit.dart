@@ -145,7 +145,7 @@ class _ProfileEdit extends State<ProfileEdit> {
       appBar: AppBar(
         title: Text('Edit Profile Page'),
       ),
-      body: Container(
+      body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             _simplePadding(),

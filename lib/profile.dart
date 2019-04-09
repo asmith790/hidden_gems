@@ -204,7 +204,6 @@ class _Profile extends State<Profile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Expanded(
-                //TODO: able to add a profile image
                 child: _buildProfileImage(),
               ),
               Expanded(
@@ -250,6 +249,7 @@ class _Profile extends State<Profile> {
                     for(int i = 0; i < doc.data['name'].length; i++){
                       print(doc.data['name']);
                       /// details about gems the user has posted
+                      //TODO: button to delete post as well!!
                       return Column(
                         children: <Widget>[
                           ListTile(
@@ -291,28 +291,52 @@ class _Profile extends State<Profile> {
             }
           },
         ),
-        FlatButton(
-          child: Text(
-            'Edit Page',
-            style: new TextStyle(
-              fontSize: 12.0,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          onPressed: (){
-            Navigator.push(
-              context,
-              new MaterialPageRoute(builder: (context) => new ProfileEdit(value: User(
-                  userId: _userId,
-                  username: _username,
-                  name: _name,
-                  email: _email,
-                  bio: _bio,
-                  imageUrl: _picture
-              ))),
-            );
-          },
+        Padding(
+            padding: EdgeInsets.only(bottom: 20)
         ),
+        FloatingActionButton(
+            tooltip: 'Edit Profile Page',
+            child: new Icon(Icons.edit),
+            onPressed: (){
+              Navigator.push(
+              context,
+              new MaterialPageRoute(builder
+                  : (context) => new ProfileEdit(value:
+              User(
+              userId: _userId,
+              username: _username,
+              name: _name,
+              email: _email,
+              bio:
+              _bio,
+              imageUrl: _picture
+              ))),
+              )
+              ;
+            }
+        ),
+//        FlatButton(
+//          child: Text(
+//            'Edit Page',
+//            style: new TextStyle(
+//              fontSize: 12.0,
+//              fontWeight: FontWeight.w400,
+//            ),
+//          ),
+//          onPressed: (){
+//            Navigator.push(
+//              context,
+//              new MaterialPageRoute(builder: (context) => new ProfileEdit(value: User(
+//                  userId: _userId,
+//                  username: _username,
+//                  name: _name,
+//                  email: _email,
+//                  bio: _bio,
+//                  imageUrl: _picture
+//              ))),
+//            );
+//          },
+//        ),
       ],
     );
   }
