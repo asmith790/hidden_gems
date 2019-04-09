@@ -125,7 +125,6 @@ class ListingPageState extends State<ListingPage> {
                 ),
               ): new Container();
             }
-
         ),
       ),
     ],);

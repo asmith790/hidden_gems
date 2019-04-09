@@ -122,7 +122,7 @@ class _Profile extends State<Profile> {
           }
         )
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(value: _username),
     );
   }
 
