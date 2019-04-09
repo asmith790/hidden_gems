@@ -4,7 +4,7 @@ import 'authProvider.dart';
 import 'rootPage.dart';
 import 'loginPage.dart';
 import 'profile.dart';
-import 'listingPage.dart';
+import 'listQuery.dart';
 import 'mapview.dart';
 
 
@@ -22,7 +22,7 @@ class StartApp extends StatelessWidget {
         routes: {
           '/login' : (_) => new Login(),
           '/profile' :(_) => new Profile(),
-          '/listings': (_) => new ListingPage(),
+          '/listings': (_) => new ListQuery(),
           '/maps' : (_) => new MapsDemo(),
           //TODO: add all the other routes here
         },
