@@ -197,6 +197,7 @@ class _Login extends State<Login>{
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return
@@ -210,16 +211,16 @@ class _Login extends State<Login>{
           children: <Widget>[
             SizedBox(width: 20.0,height: 20.0),
             new Container(
-              height: 100.0,
-              width: 80.0,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    'assets/gem.png',
+                height: 100.0,
+                width: 80.0,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                      'assets/gem.png',
+                    ),
+                    fit: BoxFit.scaleDown,
                   ),
-                  fit: BoxFit.scaleDown,
                 ),
-              ),
             ),
             new Center(
               child: Padding(

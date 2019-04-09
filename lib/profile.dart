@@ -4,6 +4,7 @@ import 'navBar.dart';
 import 'postView.dart';
 import 'auth.dart';
 import 'authProvider.dart';
+import 'profileEdit.dart';
 
 
 class Profile extends StatefulWidget {
@@ -22,7 +23,6 @@ class _Profile extends State<Profile> {
   String _bio = ' ';
   String _picture = ' ';
   int _rating = 0;
-
 
   @override
   void didChangeDependencies() {
@@ -115,22 +115,22 @@ class _Profile extends State<Profile> {
   Widget _buildProfileImage() {
     if(_picture.length > 1){
       return Center(
-        child: Container(
-          width: 140.0,
-          height: 140.0,
-          decoration: BoxDecoration(
-            // TODO: grab profile image from cloud storage and put here
-            image: DecorationImage(
-              image: AssetImage('assets/gem.png'),
-              fit: BoxFit.scaleDown,
+            child: Container(
+              width: 140.0,
+              height: 140.0,
+              decoration: BoxDecoration(
+                // TODO: grab profile image from cloud storage and put here
+                image: DecorationImage(
+                  image: AssetImage('assets/gem.png'),
+                  fit: BoxFit.scaleDown,
+                ),
+                borderRadius: BorderRadius.circular(80.0),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 10.0,
+                ),
+              ),
             ),
-            borderRadius: BorderRadius.circular(80.0),
-            border: Border.all(
-              color: Colors.white,
-              width: 10.0,
-            ),
-          ),
-        ),
       );
     }else{
       // if user doesn't have a profile picture in Database
@@ -188,6 +188,9 @@ class _Profile extends State<Profile> {
     return Column(
       children: <Widget>[
         // top portion
+        Padding(
+            padding: EdgeInsets.only(top: 15)
+        ),
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,8 +208,8 @@ class _Profile extends State<Profile> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10)
                     ),
-                    _buildRating(_rating)
                     //TODO: add rating here
+                    _buildRating(_rating),
                   ],
                 ),
               ),
@@ -278,6 +281,28 @@ class _Profile extends State<Profile> {
                   }).toList(),
                 );
             }
+          },
+        ),
+        FlatButton(
+          child: Text(
+            'Edit Page',
+            style: new TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          onPressed: (){
+            Navigator.push(
+              context,
+              new MaterialPageRoute(builder: (context) => new ProfileEdit(value: User(
+                  userId: _userId,
+                  username: _username,
+                  name: _name,
+                  email: _email,
+                  bio: _bio,
+                  imageUrl: _picture
+              ))),
+            );
           },
         ),
       ],
