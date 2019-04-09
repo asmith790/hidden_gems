@@ -119,10 +119,9 @@ class _Profile extends State<Profile> {
               width: 140.0,
               height: 140.0,
               decoration: BoxDecoration(
-                // TODO: grab profile image from cloud storage and put here
                 image: DecorationImage(
-                  image: AssetImage('assets/gem.png'),
-                  fit: BoxFit.scaleDown,
+                  fit: BoxFit.fill,
+                  image: NetworkImage(_picture),
                 ),
                 borderRadius: BorderRadius.circular(80.0),
                 border: Border.all(
@@ -164,6 +163,15 @@ class _Profile extends State<Profile> {
           color: Colors.amber,
         );
       }),
+    );
+  }
+
+  Image _profileImage(){
+    return Image.network(
+      //Would become a photo
+      _picture,
+      width: 76.0,
+      height: 45,
     );
   }
 
