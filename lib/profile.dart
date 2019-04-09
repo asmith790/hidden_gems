@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -33,8 +35,8 @@ class _Profile extends State<Profile> {
     auth.currentUser().then((userId) {
       _userId = userId;
       print('UserId: $userId');
+      _getInfo();
     });
-    //TODO: add initially load info back, it's breaking now??
   }
 
   /// Button for user to sign out of their account
@@ -49,6 +51,20 @@ class _Profile extends State<Profile> {
     }catch(e){
       print(e);
     }
+  }
+
+  Future<void> _getInfo() async {
+    Firestore.instance.collection('users').document(_userId).get().then((doc){
+      if(doc.exists){
+        print(doc.data);
+        _email = doc.data['email'];
+        _username = doc.data['username'];
+        _name = doc.data['name'];
+        _bio = doc.data['bio'];
+        _picture = doc.data['picture'];
+        _rating = doc.data['rating'];
+      }
+    });
   }
 
   bool _deleteGem(String docId){
@@ -82,7 +98,6 @@ class _Profile extends State<Profile> {
           ]
       ),
       body: SingleChildScrollView(
-        child: Center(
         child: FutureBuilder<void>(
           future: Firestore.instance.collection('users').document(_userId).get().then((doc){
                         if(doc.exists){
@@ -106,7 +121,6 @@ class _Profile extends State<Profile> {
             }
           }
         )
-      ),
       ),
       drawer: MyDrawer(),
     );
@@ -435,7 +449,7 @@ class _Profile extends State<Profile> {
     );
   }
 
-  // TODO: ton't need this - but use in other profile page for world viewing
+  // TODO: don't need this - but use in other profile page for world viewing
   Text _rateGems(DocumentSnapshot doc){
     return Text(
       doc.data['rating'].toString(),
