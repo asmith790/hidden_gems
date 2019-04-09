@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'navBar.dart';
 import 'postView.dart';
 import 'auth.dart';
@@ -32,26 +33,10 @@ class _Profile extends State<Profile> {
     auth.currentUser().then((userId) {
       _userId = userId;
       print('UserId: $userId');
-      _getProfileInfo();
     });
   }
 
-  Future<void> _getProfileInfo() async {
-    final DocumentReference userInfo = Firestore.instance.collection('users').document(_userId);
-    userInfo.get().then((doc){
-      if(doc.exists){
-        print(doc.data);
-        _email = doc.data['email'];
-        _username = doc.data['username'];
-        _name = doc.data['name'];
-        _bio = doc.data['bio'];
-        _rating = doc.data['rating'];
-        _picture = doc.data['picture'];
-      }
-    });
-  }
-
-  // parameter is context because the inherited widget auth needs it
+  /// Button for user to sign out of their account
   Future<void> _signOut(BuildContext context) async{
     try{
       final BaseAuth auth = AuthProvider.of(context).auth;
@@ -63,6 +48,231 @@ class _Profile extends State<Profile> {
     }catch(e){
       print(e);
     }
+  }
+
+  bool _deleteGem(String docId){
+    Firestore.instance.collection('posts').document(docId)
+        .delete()
+        .catchError((e) {
+          print(e);
+          return true;
+        }
+    );
+    return false;
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: AppBar(
+          title: Text('Hidden Gems'),
+          actions: <Widget>[
+            new FlatButton(
+              onPressed: () => _signOut(context),
+              child: new Text(
+                'Logout',
+                style: new TextStyle(
+                    fontSize: 17.0,
+                    color: Colors.white
+                ),
+              )
+            )
+          ]
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+        child: FutureBuilder<void>(
+          future: Firestore.instance.collection('users').document(_userId).get().then((doc){
+                        if(doc.exists){
+                          print(doc.data);
+                          _email = doc.data['email'];
+                          _username = doc.data['username'];
+                          _name = doc.data['name'];
+                          _bio = doc.data['bio'];
+                          _picture = doc.data['picture'];
+                          _rating = doc.data['rating'];
+                        }}),
+          builder: (context, snapshot){
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return new Center(child: new CircularProgressIndicator());
+            }else if(snapshot.connectionState == ConnectionState.done){
+              if(snapshot.hasError){
+                return new Text('${snapshot.error}');
+              }else{
+                return _buildPage();
+              }
+            }
+          }
+        )
+      ),
+      ),
+      drawer: MyDrawer(),
+    );
+  }
+
+  /// Widget that creates the whole page after fetches information
+  Widget _buildPage(){
+    return Column(
+      children: <Widget>[
+        // top portion
+        _simplePadding(),
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: _buildProfileImage(),
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    _buildName(),
+                    _buildUsername(),
+                    Padding(
+                        padding: EdgeInsets.only(bottom: 10)
+                    ),
+                    //TODO: add rating here
+                    _buildRating(_rating),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        _simplePadding(),
+        _buildBio(context),
+        _simplePadding(),
+        _divider(),
+        /// Displays user Gems
+        StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _username).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) return new Text('${snapshot.error}');
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return new Center(child: new CircularProgressIndicator());
+              default:
+                return ListView(
+                  shrinkWrap: true,
+                  children: snapshot.data.documents.map((DocumentSnapshot doc){
+                    for(int i = 0; i < doc.data['name'].length; i++){
+                      String curr = doc.data['name'];
+                      print(curr);
+                      /// details about gems the user has posted
+                      return Column(
+                        children: <Widget>[
+                          ListTile(
+                            leading: getPicture(doc.data['picture']),
+                            title: _titleGems(doc),
+                            subtitle: _descGems(doc),
+                            trailing: IconButton(
+                              icon: Icon(Icons.delete),
+                              color: Colors.pinkAccent,
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    // return object of type Dialog
+                                    return AlertDialog(
+                                      title: Text("Are you sure you want to delete " + curr + "?"),
+                                      content: Text("You can't take back this action"),
+                                      actions: <Widget>[
+                                        // usually buttons at the bottom of the dialog
+                                        new FlatButton(
+                                          child: Text("Delete"),
+                                          textColor: Colors.pinkAccent,
+                                          onPressed: (){
+                                            // TODO: finish the deleting gem part
+                                            bool err = _deleteGem(doc.documentID);
+                                            if(err){
+                                              Fluttertoast.showToast(
+                                                  msg: "Error deleting post, try again later",
+                                                  toastLength: Toast.LENGTH_SHORT,
+                                                  gravity: ToastGravity.CENTER,
+                                                  timeInSecForIos: 2,
+                                                  backgroundColor: Colors.black54,
+                                                  textColor: Colors.white,
+                                                  fontSize: 16.0
+                                              );
+                                            }else{
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                        ),
+                                        new FlatButton(
+                                          child: Text("Close"),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            isThreeLine: true,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID)),
+                              );
+                            },
+                          ),
+                          _divider(),
+                        ],
+                      );
+                    }
+                  }).toList(),
+                );
+            }
+          },
+        ),
+        _simplePadding(),
+        _editButton(),
+      ],
+    );
+  }
+
+  // ---- Other Widgets ----
+
+  Padding _simplePadding(){
+    return Padding(
+        padding: EdgeInsets.only(bottom: 15)
+    );
+  }
+
+  Divider _divider(){
+    return Divider(
+      height: 2.0,
+      color: Colors.grey,
+    );
+  }
+
+  Widget _editButton(){
+    return FloatingActionButton(
+        tooltip: 'Edit Profile Page',
+        child: new Icon(Icons.edit),
+        onPressed: (){
+          Navigator.push(
+            context,
+            new MaterialPageRoute(builder
+                : (context) => new ProfileEdit(value:
+            User(
+                userId: _userId,
+                username: _username,
+                name: _name,
+                email: _email,
+                bio:
+                _bio,
+                imageUrl: _picture
+            ))),
+          )
+          ;
+        }
+    );
   }
 
   Widget _buildName() {
@@ -92,44 +302,24 @@ class _Profile extends State<Profile> {
     );
   }
 
-  Widget _buildBio(BuildContext context) {
-    TextStyle bioTextStyle = TextStyle(
-      fontFamily: 'Spectral',
-      fontWeight: FontWeight.w400,
-      fontStyle: FontStyle.italic,
-      color: Color(0xFF799497),
-      fontSize: 16.0,
-    );
-
-    return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
-      padding: EdgeInsets.all(8.0),
-      child: Text(
-        _bio,
-        textAlign: TextAlign.center,
-        style: bioTextStyle,
-      ),
-    );
-  }
-
   Widget _buildProfileImage() {
     if(_picture.length > 1){
       return Center(
-            child: Container(
-              width: 140.0,
-              height: 140.0,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: NetworkImage(_picture),
-                ),
-                borderRadius: BorderRadius.circular(80.0),
-                border: Border.all(
-                  color: Colors.white,
-                  width: 10.0,
-                ),
-              ),
+        child: Container(
+          width: 140.0,
+          height: 140.0,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: NetworkImage(_picture),
             ),
+            borderRadius: BorderRadius.circular(80.0),
+            border: Border.all(
+              color: Colors.white,
+              width: 10.0,
+            ),
+          ),
+        ),
       );
     }else{
       // if user doesn't have a profile picture in Database
@@ -153,6 +343,26 @@ class _Profile extends State<Profile> {
     }
   }
 
+  Widget _buildBio(BuildContext context) {
+    TextStyle bioTextStyle = TextStyle(
+      fontFamily: 'Spectral',
+      fontWeight: FontWeight.w400,
+      fontStyle: FontStyle.italic,
+      color: Color(0xFF799497),
+      fontSize: 16.0,
+    );
+
+    return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      padding: EdgeInsets.all(8.0),
+      child: Text(
+        _bio,
+        textAlign: TextAlign.center,
+        style: bioTextStyle,
+      ),
+    );
+  }
+
 
   Widget _buildRating(int rating){
     return Row(
@@ -163,15 +373,6 @@ class _Profile extends State<Profile> {
           color: Colors.amber,
         );
       }),
-    );
-  }
-
-  Image _profileImage(){
-    return Image.network(
-      //Would become a photo
-      _picture,
-      width: 76.0,
-      height: 45,
     );
   }
 
@@ -192,155 +393,8 @@ class _Profile extends State<Profile> {
     );
   }
 
-  Widget _buildPage(){
-    return Column(
-      children: <Widget>[
-        // top portion
-        Padding(
-            padding: EdgeInsets.only(top: 15)
-        ),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: _buildProfileImage(),
-              ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    _buildName(),
-                    _buildUsername(),
-                    Padding(
-                        padding: EdgeInsets.only(bottom: 10)
-                    ),
-                    //TODO: add rating here
-                    _buildRating(_rating),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-            padding: EdgeInsets.only(bottom: 20)
-        ),
-        _buildBio(context),
-        Padding(
-            padding: EdgeInsets.only(bottom: 20)
-        ),
-        Divider(
-          height: 2.0,
-          color: Colors.grey,
-        ),
-        // Displaying user Gems
-        StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('posts').where("userid", isEqualTo: _username).snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) return new Text('${snapshot.error}');
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting:
-                return new Center(child: new CircularProgressIndicator());
-              default:
-                return ListView(
-                  shrinkWrap: true,
-                  children: snapshot.data.documents.map((DocumentSnapshot doc){
-                    for(int i = 0; i < doc.data['name'].length; i++){
-                      print(doc.data['name']);
-                      /// details about gems the user has posted
-                      //TODO: button to delete post as well!!
-                      return Column(
-                        children: <Widget>[
-                          ListTile(
-                            leading: getPicture(doc.data['picture']),
-                            title: new Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                _titleGems(doc),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    _rateGems(doc),
-                                    Padding(
-                                      padding: EdgeInsets.only(left: 5)
-                                    ),
-                                    _thumbs(doc),
-                                  ],
-                                )
-                              ],
-                            ),
-                            subtitle: _descGems(doc),
-                            isThreeLine: true,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID)),
-                              );
-                            },
-                          ),
-                          Divider(
-                            height: 2.0,
-                            color: Colors.grey,
-                          ),
-                        ],
-                      );
-                    }
-                  }).toList(),
-                );
-            }
-          },
-        ),
-        Padding(
-            padding: EdgeInsets.only(bottom: 20)
-        ),
-        FloatingActionButton(
-            tooltip: 'Edit Profile Page',
-            child: new Icon(Icons.edit),
-            onPressed: (){
-              Navigator.push(
-              context,
-              new MaterialPageRoute(builder
-                  : (context) => new ProfileEdit(value:
-              User(
-              userId: _userId,
-              username: _username,
-              name: _name,
-              email: _email,
-              bio:
-              _bio,
-              imageUrl: _picture
-              ))),
-              )
-              ;
-            }
-        ),
-//        FlatButton(
-//          child: Text(
-//            'Edit Page',
-//            style: new TextStyle(
-//              fontSize: 12.0,
-//              fontWeight: FontWeight.w400,
-//            ),
-//          ),
-//          onPressed: (){
-//            Navigator.push(
-//              context,
-//              new MaterialPageRoute(builder: (context) => new ProfileEdit(value: User(
-//                  userId: _userId,
-//                  username: _username,
-//                  name: _name,
-//                  email: _email,
-//                  bio: _bio,
-//                  imageUrl: _picture
-//              ))),
-//            );
-//          },
-//        ),
-      ],
-    );
-  }
 
+  // TODO: don't need but save to use on Post page - use in other profile page for world viewing
   Icon _thumbs(DocumentSnapshot doc){
     int rating = doc.data['rating'];
     if(rating < 0){
@@ -373,13 +427,14 @@ class _Profile extends State<Profile> {
     return Text(
       doc.data['description'],
       style: TextStyle(
-        fontSize: 16.0,
-        fontWeight: FontWeight.w400,
-        color: Colors.black38
+          fontSize: 16.0,
+          fontWeight: FontWeight.w400,
+          color: Colors.black38
       ),
     );
   }
 
+  // TODO: ton't need this - but use in other profile page for world viewing
   Text _rateGems(DocumentSnapshot doc){
     return Text(
       doc.data['rating'].toString(),
@@ -391,49 +446,5 @@ class _Profile extends State<Profile> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(
-          title: Text('Hidden Gems'),
-          actions: <Widget>[
-            new FlatButton(
-              onPressed: () => _signOut(context),
-              child: new Text(
-                'Logout',
-                style: new TextStyle(
-                    fontSize: 17.0,
-                    color: Colors.white
-                ),
-              )
-            )
-          ]
-      ),
-      body: Center(
-        child: FutureBuilder<void>(
-          future: Firestore.instance.collection('users').document(_userId).get().then((doc){
-                        if(doc.exists){
-                          print(doc.data);
-                          _email = doc.data['email'];
-                          _username = doc.data['username'];
-                          _name = doc.data['name'];
-                          _bio = doc.data['bio'];
-                          _rating = doc.data['rating'];
-                        }}),
-          builder: (context, snapshot){
-            if(snapshot.connectionState == ConnectionState.waiting){
-              return new Center(child: new CircularProgressIndicator());
-            }else if(snapshot.connectionState == ConnectionState.done){
-              if(snapshot.hasError){
-                return new Text('${snapshot.error}');
-              }else{
-                return _buildPage();
-              }
-            }
-          }
-        )
-      ),
-      drawer: MyDrawer(),
-    );
-  }
+
 }
