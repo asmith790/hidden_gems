@@ -3,10 +3,10 @@ import 'post.dart';
 import 'postView.dart';
 
 class ListingPage extends StatefulWidget{
+  final String username;
   final List<Post> posts;
-
   @override
-  ListingPage({this.posts});
+  ListingPage({this.posts, Key key, this.username}) : super(key: key);
   State<StatefulWidget> createState() => new ListingPageState(posts);
 }
 
@@ -119,7 +119,7 @@ class ListingPageState extends State<ListingPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      new MaterialPageRoute(builder: (context) => new PostView(id: posts[index].id)),
+                      new MaterialPageRoute(builder: (context) => new PostView(id: posts[index].id, username: widget.username)),
                     );
                   },
                 ),
