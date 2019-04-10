@@ -24,7 +24,6 @@ class StartApp extends StatelessWidget {
           '/profile' :(_) => new Profile(),
           '/listings': (_) => new ListQuery(),
           '/maps' : (_) => new MapsDemo(),
-          //TODO: add all the other routes here
         },
       )
     );

@@ -122,7 +122,7 @@ class _Profile extends State<Profile> {
           }
         )
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(value: _username),
     );
   }
 
@@ -199,7 +199,6 @@ class _Profile extends State<Profile> {
                                           child: Text("Delete"),
                                           textColor: Colors.pinkAccent,
                                           onPressed: (){
-                                            // TODO: finish the deleting gem part
                                             bool err = _deleteGem(doc.documentID);
                                             if(err){
                                               Fluttertoast.showToast(
@@ -410,25 +409,6 @@ class _Profile extends State<Profile> {
     );
   }
 
-
-  // TODO: don't need but save to use on Post page - use in other profile page for world viewing
-  Icon _thumbs(DocumentSnapshot doc){
-    int rating = doc.data['rating'];
-    if(rating < 0){
-      return Icon(
-        Icons.thumb_down,
-        color: Colors.blue,
-        size: 20.0,
-      );
-    }else{
-      return Icon(
-        Icons.thumb_up,
-        color: Colors.blue,
-        size: 20.0,
-      );
-    }
-  }
-
   Text _titleGems(DocumentSnapshot doc){
     return Text(
       doc.data['name'],
@@ -450,18 +430,5 @@ class _Profile extends State<Profile> {
       ),
     );
   }
-
-  // TODO: don't need this - but use in other profile page for world viewing
-  Text _rateGems(DocumentSnapshot doc){
-    return Text(
-      doc.data['rating'].toString(),
-      style: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.w500,
-          color: Colors.black38
-      ),
-    );
-  }
-
 
 }

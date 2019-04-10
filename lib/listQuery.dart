@@ -5,6 +5,8 @@ import 'post.dart';
 import 'listingPage.dart';
 
 class ListQuery extends StatefulWidget {
+  final String username;
+  ListQuery({Key key, this.username}) : super(key: key);
 
   @override
   State createState() => new ListQueryState();
@@ -14,7 +16,6 @@ class ListQueryState extends State<ListQuery> {
   Stream query;
 
   void initState() {
-    // TODO: implement initState
     super.initState();
     query = Firestore.instance.collection('posts').where("finished", isEqualTo: true).snapshots();
     super.initState();
@@ -59,7 +60,7 @@ class ListQueryState extends State<ListQuery> {
             }
           },
         ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(value: widget.username),
     );
   }
 }

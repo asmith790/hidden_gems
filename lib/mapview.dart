@@ -3,12 +3,17 @@ import 'navBar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapsDemo extends StatefulWidget {
+  final String username;
+  MapsDemo({Key key, this.username}) : super(key: key);
+
   @override
   State createState() => MapV();
 }
 class MapV extends State<MapsDemo> {
   @override
   GoogleMapController mapController;
+
+
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(title: Text('Hidden Gems')),
@@ -42,7 +47,7 @@ class MapV extends State<MapsDemo> {
 //          )
         ],
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(value: widget.username),
     );
   }
   void _onMapCreated(GoogleMapController controller) {

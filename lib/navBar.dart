@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hidden_gems/listQuery.dart';
+import 'package:hidden_gems/mapview.dart';
 import 'newPost.dart';
 
 class MyDrawer extends StatelessWidget {
+  final String value;
+  MyDrawer({Key key, this.value}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,14 +38,20 @@ class MyDrawer extends StatelessWidget {
             title: Text('List View'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/listings');
+              Navigator.push(
+                context,
+                new MaterialPageRoute(builder: (context) => new ListQuery(username: value)),
+              );
             },
           ),
           ListTile(
             title: Text('Map View'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/maps');
+              Navigator.push(
+                context,
+                new MaterialPageRoute(builder: (context) => new MapsDemo(username: value)),
+              );
             },
           ),
           ListTile(
@@ -50,7 +60,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                new MaterialPageRoute(builder: (context) => new CustomForm()),
+                new MaterialPageRoute(builder: (context) => new CustomForm(username: value)),
               );
             },
           ),
