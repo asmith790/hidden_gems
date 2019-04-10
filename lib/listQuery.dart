@@ -56,7 +56,7 @@ class ListQueryState extends State<ListQuery> {
                 return new CircularProgressIndicator();
               default:
                 posts = getPosts(snapshot);
-                return new ListingPage(posts: posts);
+                return new ListingPage(posts: posts, username: widget.username,);
             }
           },
         ),
