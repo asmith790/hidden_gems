@@ -6,6 +6,9 @@ class Post{
      String userid;
      String imgUrl;
      String id;
+     double latitude;
+     double longitude;
+     double distance;
 
-     Post({this.description,this.name,this.tags,this.rating,this.userid, this.imgUrl, this.id})
+     Post({this.description,this.name,this.tags,this.rating,this.userid, this.imgUrl, this.id, this.latitude, this.longitude})
      {}}

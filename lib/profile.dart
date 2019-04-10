@@ -34,7 +34,6 @@ class _Profile extends State<Profile> {
     //once currentUser() returns a user since it is a Future, then we can do something
     auth.currentUser().then((userId) {
       _userId = userId;
-      print('UserId: $userId');
       _getInfo();
     });
   }
@@ -56,7 +55,6 @@ class _Profile extends State<Profile> {
   Future<void> _getInfo() async {
     Firestore.instance.collection('users').document(_userId).get().then((doc){
       if(doc.exists){
-        print(doc.data);
         _email = doc.data['email'];
         _username = doc.data['username'];
         _name = doc.data['name'];
@@ -101,7 +99,6 @@ class _Profile extends State<Profile> {
         child: FutureBuilder<void>(
           future: Firestore.instance.collection('users').document(_userId).get().then((doc){
                         if(doc.exists){
-                          print(doc.data);
                           _email = doc.data['email'];
                           _username = doc.data['username'];
                           _name = doc.data['name'];
@@ -174,7 +171,6 @@ class _Profile extends State<Profile> {
                   children: snapshot.data.documents.map((DocumentSnapshot doc){
                     for(int i = 0; i < doc.data['name'].length; i++){
                       String curr = doc.data['name'];
-                      print(curr);
                       /// details about gems the user has posted
                       return Column(
                         children: <Widget>[

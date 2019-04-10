@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'post.dart';
 import 'postView.dart';
 
@@ -38,8 +39,7 @@ class ListingPageState extends State<ListingPage> {
   }
 
   @override
-  initState() {
-    super.initState();
+  initState () {
     controller.addListener(() {
       setState(() {
         filter = controller.text;
@@ -48,11 +48,13 @@ class ListingPageState extends State<ListingPage> {
     super.initState();
   }
 
+
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +94,12 @@ class ListingPageState extends State<ListingPage> {
                       TextSpan(
                         children: <TextSpan>[
                           TextSpan(
-                              text: posts[index].description,
+                              text: posts[index].description + "\n",
                               style: TextStyle(
                                 fontSize: 18.0,
                               )),
                           TextSpan(
-                              text: '\ndistance here\n',
+                              text: posts[index].distance.toString(),
                               style: TextStyle(
                                   fontStyle: FontStyle.italic,
                                   fontSize: 18.0)),
@@ -125,7 +127,6 @@ class ListingPageState extends State<ListingPage> {
                 ),
               ): new Container();
             }
-
         ),
       ),
     ],);
