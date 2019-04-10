@@ -17,7 +17,6 @@ class ShowHideTextField extends StatefulWidget {
   }
 }
 
-
 class CustomForm extends StatefulWidget {
   final String username;
   CustomForm({Key key, this.username}) : super(key: key);
@@ -27,6 +26,7 @@ class CustomForm extends StatefulWidget {
 }
 class NewPost extends State<CustomForm> {
   @override
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _tagsController = TextEditingController();
@@ -141,6 +141,7 @@ class NewPost extends State<CustomForm> {
 
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _formKey,
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(title: Text('Add a New Gem!')),
       body: Container(
@@ -150,7 +151,12 @@ class NewPost extends State<CustomForm> {
           children: <Widget>[
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                },
                 controller: _nameController,
                 maxLength: 20,
                 decoration: InputDecoration(labelText: 'Name'),
@@ -159,7 +165,12 @@ class NewPost extends State<CustomForm> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                },
                 controller: _descriptionController,
                 maxLength: 35,
                 decoration: InputDecoration(labelText: 'Description'),
@@ -168,7 +179,7 @@ class NewPost extends State<CustomForm> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
                 controller: _tagsController,
                 decoration: InputDecoration(labelText: 'Tags'),
               ),
@@ -279,10 +290,10 @@ class NewPost extends State<CustomForm> {
                   );
                 });
               },
+              )
+              ],
             ),
-          ],
         ),
-      ),
       drawer: MyDrawer(value: _username),
     );
   }
