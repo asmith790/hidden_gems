@@ -48,7 +48,7 @@ class _PostView extends State<PostView> {
                   posts = snapshot.data.documents.map((document) => new Post(
                       description: document["description"],
                       name: document["name"],
-                      tags: document["tags"].toString(),    //Update this to the tag thing Sami is using
+                      tags: document["tags"].toString(),
                       rating: document["rating"],
                       userid: document["userid"],
                       imgUrl: document["picture"],
