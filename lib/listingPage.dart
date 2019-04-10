@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'navBar.dart';
+import 'post.dart';
 import 'postView.dart';
-import 'auth.dart';
-import 'rootPage.dart';
 
-class ListingPage extends StatelessWidget {
+class ListingPage extends StatefulWidget{
+  final String username;
+  final List<Post> posts;
+  @override
+  ListingPage({this.posts, Key key, this.username}) : super(key: key);
+  State<StatefulWidget> createState() => new ListingPageState(posts);
+}
 
-  Image getPicture(String url){
-    if(url == ""){
+class ListingPageState extends State<ListingPage> {
+  List<Post> posts;
+
+  ListingPageState(List<Post> posts){
+    this.posts = posts;
+  }
+
+  TextEditingController controller = new TextEditingController();
+  String filter = "";
+
+//Place posts from Query into here
+  Image getPicture(String url) {
+    if (url == "") {
       return Image.asset(
         //Would become a photo
         'assets/gem.png',
@@ -22,75 +36,97 @@ class ListingPage extends StatelessWidget {
       width: 76.0,
     );
   }
+
+  @override
+  initState() {
+    super.initState();
+    controller.addListener(() {
+      setState(() {
+        filter = controller.text;
+      });
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Hidden Gems')),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('posts').where("finished", isEqualTo: true).snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) return new Text('${snapshot.error}');
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return new Center(child: new CircularProgressIndicator());
-            default:
-              return new ListView(  //Might have to use a listview builder and specify item count?
-                //itemCount: snapshot.data.documents.length,
-                children:
-                    snapshot.data.documents.map((DocumentSnapshot document) {
-                  return new ListTile(
-                    title: new Text(
-                      document['name'],
-                      style: TextStyle(
-                        fontSize: 22.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue,
-                      ),
-                    ),
-                    subtitle: new Row(children: <Widget>[
-                      new Text.rich(
-                        TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: document['description'],
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                )),
-                            TextSpan(
-                                text: '\ndistance here',
-                                style: TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    fontSize: 18.0)),
-                            TextSpan(
-                                text: '\n${document['tags'].toString()}',
-                                style: TextStyle(
-                                    fontSize: 18.0,
-                                fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    ]),
-                    isThreeLine: true,
-                    leading: Column(
-                      children: <Widget>[
-                      getPicture(document['picture']),
-                      ],
-                    ),
-                    onTap: () {
-                      print('document id: ' + document.documentID);
-                      Navigator.push(
-                        context,
-                        new MaterialPageRoute(builder: (context) => new PostView(id: document.documentID)),
-                      );
-                    },
-                  );
-                }).toList(),
-              );
-          }
-        },
+    return Column(children: <Widget>[
+      Padding(
+        padding: EdgeInsets.fromLTRB(15, 10, 15, 5),
+        child: TextField( //Work around
+          decoration: new InputDecoration(
+            labelText: "Search",
+            suffixIcon: Icon(Icons.search),
+            enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue)
+            ),
+          ),
+          controller: controller,
+        ),
       ),
-      drawer: MyDrawer(),
-    );
+      Expanded(
+        child:
+
+        ListView.builder(
+            shrinkWrap: true,
+            itemCount: posts.length,
+            itemBuilder: (BuildContext context, int index) {
+              return posts[index].name.toLowerCase().contains(filter.toLowerCase()) || posts[index].tags.toLowerCase().contains(filter.toLowerCase()) ? new Container (
+                child: ListTile(
+                  title: new Text(
+                    posts[index].name,
+                    style: TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  subtitle: new Row(children: <Widget>[
+                    new Text.rich(
+                      TextSpan(
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: posts[index].description,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                              )),
+                          TextSpan(
+                              text: '\ndistance here\n',
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontSize: 18.0)),
+                          TextSpan(
+                              text: posts[index].tags.toString(),
+                              style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ]),
+                  isThreeLine: true,
+                  leading: Column(
+                    children: <Widget>[
+                      getPicture(posts[index].imgUrl),
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(builder: (context) => new PostView(id: posts[index].id, username: widget.username)),
+                    );
+                  },
+                ),
+              ): new Container();
+            }
+        ),
+      ),
+    ],);
   }
 }
-
