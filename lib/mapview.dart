@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'navBar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MapsDemo extends StatefulWidget {
   @override
@@ -9,46 +9,58 @@ class MapsDemo extends StatefulWidget {
 class MapV extends State<MapsDemo> {
   @override
   GoogleMapController mapController;
-  //static const LatLng _center = const LatLng(29.6516, -82.3248);
-  static final CameraPosition _center = CameraPosition(
-    target: LatLng(29.6516, -82.3248),
-    zoom: 30,
-  );
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(title: Text('Map View')),
-      body: ListView(
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Center(
-                child: SizedBox(
-                  width: 400.0,
-                  height: 600.0,
-                  child: GoogleMap(
-                    onMapCreated: _onMapCreated,
-                    options: GoogleMapOptions(
-                      scrollGesturesEnabled: true,
-                      cameraPosition: _center,
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-//          Row(
-//            mainAxisAlignment: MainAxisAlignment.center,
-//            children: <Widget>[
-//              Text('Bottom of Map'),
-//            ],
-//          )
-        ],
+  static const LatLng _center = const LatLng(29.6516, -82.3248);
+
+  List <LatLng> allMarkers;
+
+  void _updateMarkers() {
+      Firestore.instance.collection('posts')
+          .where("finished", isEqualTo: true)
+          .snapshots()
+          .listen((data) =>
+          data.documents.forEach((doc) => print(doc["position"])));
+          //data.documents.forEach((doc) => allMarkers.add(doc["position"])));
+          //print(allMarkers);
+  }
+
+  void marker() {
+    mapController.addMarker(
+      MarkerOptions(
+        //icon: BitmapDescriptor.fromAsset("assets/gemicon.bmp"),
+        //position: LatLng(29.6516, -82.3248),
+        position: LatLng(allMarkers[0].latitude, allMarkers[0].longitude),
       ),
-      drawer: MyDrawer(),
     );
   }
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() { mapController = controller; });
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Map View'),
+          backgroundColor: Colors.green[700],
+        ),
+        body: GoogleMap(
+          onMapCreated: (GoogleMapController controller) {
+            mapController = controller;
+            _updateMarkers();
+            marker();
+          },
+          options: GoogleMapOptions(
+            scrollGesturesEnabled: true,
+            tiltGesturesEnabled: true,
+            rotateGesturesEnabled: true,
+            myLocationEnabled: true,
+            compassEnabled: true,
+            cameraPosition: CameraPosition(
+              target: _center,
+              zoom: 11.0,
+            ),
+          ),
+        ),
+        )
+      );
   }
+
 }
