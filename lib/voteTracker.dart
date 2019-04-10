@@ -47,30 +47,42 @@ class _VoteTrackerState extends State<VoteTracker> {
   Widget build(BuildContext context) {
     return new Column(
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(_counter.toString()),
-          ],
-        ),
+//        Row(
+//          mainAxisAlignment: MainAxisAlignment.center,
+//          children: <Widget>[
+//            Text(_counter.toString()),
+//          ],
+//        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           verticalDirection: VerticalDirection.up,
           children: <Widget>[
             Column(
               children: <Widget>[
-                RaisedButton(
-                  child: Text('Downvote'),
+                IconButton(
+                  icon: Icon(Icons.thumb_down),
+                  color: Colors.blue,
+                  iconSize: 40.0,
                   onPressed: () {
                     decrement(_postId);
                   },
                 )
               ],
             ),
+            Text(
+                _counter.toString(),
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontFamily: 'Roboto',
+                fontSize: 20.0
+              ),
+            ),
             Column(
               children: <Widget>[
-                RaisedButton(
-                  child: Text('Upvote'),
+                IconButton(
+                  icon: Icon(Icons.thumb_up),
+                  color: Colors.blue,
+                  iconSize: 40.0,
                   onPressed: () {
                     increment(_postId);
                   },

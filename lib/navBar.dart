@@ -40,7 +40,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                new MaterialPageRoute(builder: (context) => new ListQuery(username: value,)),
+                new MaterialPageRoute(builder: (context) => new ListQuery(username: value)),
               );
             },
           ),
@@ -50,7 +50,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                new MaterialPageRoute(builder: (context) => new MapsDemo(username: value,)),
+                new MaterialPageRoute(builder: (context) => new MapsDemo(username: value)),
               );
             },
           ),
@@ -60,7 +60,7 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                new MaterialPageRoute(builder: (context) => new CustomForm(username: value,)),
+                new MaterialPageRoute(builder: (context) => new CustomForm(username: value)),
               );
             },
           ),
