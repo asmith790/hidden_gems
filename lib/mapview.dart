@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'navBar.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapsDemo extends StatefulWidget {
   final String username;
@@ -11,7 +11,6 @@ class MapsDemo extends StatefulWidget {
   @override
   State createState() => MapV();
 }
-
 class MapV extends State<MapsDemo> {
   @override
   GoogleMapController mapController;
@@ -61,7 +60,7 @@ class MapV extends State<MapsDemo> {
       appBar: AppBar(title: Text('Hidden Gems')),
       body: userLocation == null ? Container() : GoogleMap(
         onMapCreated: (GoogleMapController controller) {
-          initState();
+          //initState();
           mapController = controller;
           _updateMarkers();
         },
