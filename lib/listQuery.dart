@@ -14,43 +14,13 @@ class ListQuery extends StatefulWidget {
 class ListQueryState extends State<ListQuery> {
   Stream query;
   Position userLocation;
-
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    query = Firestore.instance.collection('posts').where("finished", isEqualTo: true).snapshots();
-    locateUser().then((value) {
-      setState(() {
-        userLocation = value;
-      });
-    });
-    super.initState();
-  }
-
-  Future<Position> locateUser() async {
-    return Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((location) {
-      return location;
-    });
-
-  }
-
-  Future<double> distance (double latitude, double longitude){
-    double distance;
-    Geolocator().distanceBetween(latitude, longitude, userLocation.latitude, userLocation.longitude).then((value){
-      distance = value/1609.344;
-      return distance;
-    });
-  }
-
   List<Post> posts = new List<Post>();
 
-//Place posts from Query into here
-  Future<List<Post>> getPosts(AsyncSnapshot<QuerySnapshot> snapshot) async {
+  /// Place posts from Query into a list of Post Objects
+  List<Post> _getPosts(AsyncSnapshot<QuerySnapshot> snapshot){
+    print('in here?');
     List<Post> queryPosts;
-    queryPosts = snapshot.data.documents
-        .map((document) =>
+    queryPosts = snapshot.data.documents.map((document) =>
     new Post(
       description: document["description"],
       name: document["name"],
@@ -62,43 +32,85 @@ class ListQueryState extends State<ListQuery> {
       latitude: document["position"].latitude,
       longitude: document["position"].longitude,
       )).toList();
-
     //TODO: numbers.sort((num1, num2) => num1 - num2); // => [1, 2, 3, 4, 5] -- try sorting by distance
     return queryPosts;
   }
 
-  void distances()async{
+  /// Calculates the distance of current location with the posts in DB
+  Future<Widget> _distances() async {
+    double distance;
     for(int i=0; i < posts.length; i++){
-      distance(posts[i].latitude, posts[i].longitude).then((value){
-        posts[i].distance = value;
-      });
+        double distanceInMeters = await Geolocator().distanceBetween(posts[i].latitude, posts[i].longitude, userLocation.latitude, userLocation.longitude);
+        distance = distanceInMeters/1609.344;
+        // TODO: make sure the distance digits are trimmed and say if it is miles.. etc.
+        print('Distance: ' + distance.toString());
+        posts[i].distance = distance;
     }
+    return Container(width: 0.0, height: 0.0,);
   }
 
   @override
   Widget build(BuildContext context) {
-    if(userLocation == null)
-      return new Container();
-    else
     return Scaffold(
       appBar: AppBar(title: Text('Hidden Gems')),
-      body: StreamBuilder<QuerySnapshot>(
-          stream: query,
-          builder: (BuildContext context,
-              AsyncSnapshot<QuerySnapshot> snapshot) {
+      body: FutureBuilder<void>(
+          // waits to get the current location of user before moving on
+          future: Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((location) {
+            print('Current Location of User: ' + location.toString());
+            userLocation = location;
+            return location;
+          }),
+          builder: (context, snapshot){
+              if(snapshot.connectionState == ConnectionState.waiting){
+                return new Center(child: new CircularProgressIndicator());
+              }else if(snapshot.connectionState == ConnectionState.done){
+                if(snapshot.hasError){
+                  return new Text('${snapshot.error}');
+                }else{
+                  return _buildPage();
+                }
+              }},
+      ),
+      drawer: MyDrawer(),
+    );
+  }
+
+  /// Stream that Gets all the posts in the DB
+  Widget _buildPage(){
+    return StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('posts').where("finished", isEqualTo: true).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) return new Text('${snapshot.error}');
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
                 return new CircularProgressIndicator();
               default:
-                getPosts(snapshot).then((value){
-                  posts = value;
-                });
-                return new ListingPage(posts: posts);
+                posts = _getPosts(snapshot);
+                return _distanceBuild();
             }
           },
-        ),
-      drawer: MyDrawer(),
     );
   }
+
+  /// Calculates the distances between current location with each post
+  ///
+  /// Then Calls the Listing page which builds the UI of the page
+  Widget _distanceBuild(){
+    return FutureBuilder<void>(
+      future: _distances(),
+      builder: (context, snapshot){
+        if(snapshot.connectionState == ConnectionState.waiting){
+          return new Center(child: new CircularProgressIndicator());
+        }else if(snapshot.connectionState == ConnectionState.done){
+          if(snapshot.hasError){
+            return new Text('${snapshot.error}');
+          }else{
+            return ListingPage(posts: posts);
+          }
+        }
+      },
+    );
+  }
+
+
 }

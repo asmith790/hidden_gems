@@ -12,6 +12,7 @@ class ListingPage extends StatefulWidget{
 }
 
 class ListingPageState extends State<ListingPage> {
+  // List of posts from database
   List<Post> posts;
 
   ListingPageState(List<Post> posts){
@@ -21,7 +22,24 @@ class ListingPageState extends State<ListingPage> {
   TextEditingController controller = new TextEditingController();
   String filter = "";
 
-//Place posts from Query into here
+  @override
+  initState () {
+    super.initState();
+    controller.addListener(() {
+      setState(() {
+        filter = controller.text;
+      });
+    });
+
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the Widget is removed from the Widget tree
+    controller.dispose();
+    super.dispose();
+  }
+
   Image getPicture(String url) {
     if (url == "") {
       return Image.asset(
@@ -37,24 +55,6 @@ class ListingPageState extends State<ListingPage> {
       width: 76.0,
     );
   }
-
-  @override
-  initState () {
-    controller.addListener(() {
-      setState(() {
-        filter = controller.text;
-      });
-    });
-    super.initState();
-  }
-
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +73,7 @@ class ListingPageState extends State<ListingPage> {
         ),
       ),
       Expanded(
-        child:
-
-        ListView.builder(
+        child: ListView.builder(
             shrinkWrap: true,
             itemCount: posts.length,
             itemBuilder: (BuildContext context, int index) {
@@ -103,11 +101,11 @@ class ListingPageState extends State<ListingPage> {
                               style: TextStyle(
                                   fontStyle: FontStyle.italic,
                                   fontSize: 18.0)),
-                          TextSpan(
-                              text: posts[index].tags.toString(),
-                              style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold)),
+//                          TextSpan(
+//                              text: posts[index].tags.toString(),
+//                              style: TextStyle(
+//                                  fontSize: 18.0,
+//                                  fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
