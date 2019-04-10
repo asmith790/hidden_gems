@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
+import 'navBar.dart';
 
 class MapsDemo extends StatefulWidget {
   @override
@@ -17,9 +18,11 @@ class MapV extends State<MapsDemo> {
   @override
   void initState() {
     super.initState();
-    locateUser().then((position) {
-      userLocation = position;
-    });
+      locateUser().then((position) {
+        setState(() {
+          userLocation = position;
+        });
+      });
   }
 
   Future<Position> locateUser() async {
@@ -50,22 +53,12 @@ class MapV extends State<MapsDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Map View'),
-          backgroundColor: Colors.green[700],
-        ),
-        floatingActionButton: FloatingActionButton(onPressed: (){
-          locateUser().then((value) {
-            setState(() {
-              userLocation = value;
-            });
-          });
-          //center = LatLng(userLocation.latitude,userLocation.longitude);
-        }),
+      return Scaffold(
+        appBar: AppBar(title: Text('Map View'), backgroundColor: Colors.green[700],),
+
         body: GoogleMap(
           onMapCreated: (GoogleMapController controller) {
+            initState();
             mapController = controller;
             _updateMarkers();
             },
@@ -74,14 +67,13 @@ class MapV extends State<MapsDemo> {
             myLocationEnabled: true,
             compassEnabled: true,
             cameraPosition: CameraPosition(
-              target: LatLng(29.6516,-82.3248),
-              //target: LatLng(userLocation.latitude,userLocation.longitude),
+              //target: LatLng(29.6516,-82.3248),
+              target: LatLng(userLocation.latitude,userLocation.longitude),
               zoom: 11.0,
             ),
           ),
         ),
-
-    )
+        drawer: MyDrawer(),
     );
     }
   }

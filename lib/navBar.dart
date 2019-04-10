@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'newPost.dart';
 
 class MyDrawer extends StatelessWidget {
 
@@ -48,10 +47,7 @@ class MyDrawer extends StatelessWidget {
             title: Text('New Post'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(
-                context,
-                new MaterialPageRoute(builder: (context) => new CustomForm()),
-              );
+              Navigator.pushNamed(context, '/post');
             },
           ),
         ],

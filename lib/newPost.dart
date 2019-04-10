@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'navBar.dart';
 
 class ShowHideTextField extends StatefulWidget {
   @override
@@ -234,6 +235,7 @@ class NewPost extends State<CustomForm> {
           ],
         ),
       ),
+      drawer: MyDrawer(),
     );
   }
 }

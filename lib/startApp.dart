@@ -6,6 +6,7 @@ import 'loginPage.dart';
 import 'profile.dart';
 import 'listingPage.dart';
 import 'mapview.dart';
+import 'newPost.dart';
 
 
 class StartApp extends StatelessWidget {
@@ -24,6 +25,7 @@ class StartApp extends StatelessWidget {
           '/profile' :(_) => new Profile(),
           '/listings': (_) => new ListingPage(),
           '/maps' : (_) => new MapsDemo(),
+          '/post' : (_) => new CustomForm(),
           //TODO: add all the other routes here
         },
       )
