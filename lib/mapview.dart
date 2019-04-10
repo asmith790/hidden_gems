@@ -57,7 +57,7 @@ class MapV extends State<MapsDemo> {
         appBar: AppBar(title: Text('Hidden Gems')),
         body: userLocation == null ? Container() : GoogleMap(
           onMapCreated: (GoogleMapController controller) {
-            initState();
+            //initState();
             mapController = controller;
             _updateMarkers();
             },
