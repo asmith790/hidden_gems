@@ -61,7 +61,7 @@ class ListingPageState extends State<ListingPage> {
     return Column(children: <Widget>[
       Padding(
         padding: EdgeInsets.fromLTRB(15, 10, 15, 5),
-        child: TextField( //Work around
+        child: TextField(
           decoration: new InputDecoration(
             labelText: "Search",
             suffixIcon: Icon(Icons.search),
@@ -97,15 +97,15 @@ class ListingPageState extends State<ListingPage> {
                                 fontSize: 18.0,
                               )),
                           TextSpan(
-                              text: posts[index].distance.toString(),
+                              text:  posts[index].distance == 1 ? posts[index].distance.toStringAsFixed(1) + " mile away\n" : posts[index].distance.toStringAsFixed(1) + " miles away\n" ,
                               style: TextStyle(
                                   fontStyle: FontStyle.italic,
                                   fontSize: 18.0)),
-//                          TextSpan(
-//                              text: posts[index].tags.toString(),
-//                              style: TextStyle(
-//                                  fontSize: 18.0,
-//                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: posts[index].tags.toString(),
+                              style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),

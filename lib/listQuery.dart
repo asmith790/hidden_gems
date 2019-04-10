@@ -18,7 +18,6 @@ class ListQueryState extends State<ListQuery> {
 
   /// Place posts from Query into a list of Post Objects
   List<Post> _getPosts(AsyncSnapshot<QuerySnapshot> snapshot){
-    print('in here?');
     List<Post> queryPosts;
     queryPosts = snapshot.data.documents.map((document) =>
     new Post(
@@ -32,7 +31,6 @@ class ListQueryState extends State<ListQuery> {
       latitude: document["position"].latitude,
       longitude: document["position"].longitude,
       )).toList();
-    //TODO: numbers.sort((num1, num2) => num1 - num2); // => [1, 2, 3, 4, 5] -- try sorting by distance
     return queryPosts;
   }
 
@@ -42,8 +40,6 @@ class ListQueryState extends State<ListQuery> {
     for(int i=0; i < posts.length; i++){
         double distanceInMeters = await Geolocator().distanceBetween(posts[i].latitude, posts[i].longitude, userLocation.latitude, userLocation.longitude);
         distance = distanceInMeters/1609.344;
-        // TODO: make sure the distance digits are trimmed and say if it is miles.. etc.
-        print('Distance: ' + distance.toString());
         posts[i].distance = distance;
     }
     return Container(width: 0.0, height: 0.0,);
@@ -56,7 +52,6 @@ class ListQueryState extends State<ListQuery> {
       body: FutureBuilder<void>(
           // waits to get the current location of user before moving on
           future: Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high).then((location) {
-            print('Current Location of User: ' + location.toString());
             userLocation = location;
             return location;
           }),
@@ -105,6 +100,7 @@ class ListQueryState extends State<ListQuery> {
           if(snapshot.hasError){
             return new Text('${snapshot.error}');
           }else{
+            posts.sort((a,b) => a.distance.round() - b.distance.round());
             return ListingPage(posts: posts);
           }
         }
