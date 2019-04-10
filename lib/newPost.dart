@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'navBar.dart';
 
 //TODO: what is this class doing here, is it even being used??
 class ShowHideTextField extends StatefulWidget {
@@ -184,8 +185,6 @@ class NewPost extends State<CustomForm> {
                   this.setState(() {
                     _tagsController.clear();
                   });
-
-                  //_tagsController.clear();
                 },
                 //tooltip: 'Add tag',
                 child: new Icon(Icons.add)
