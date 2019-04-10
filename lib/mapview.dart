@@ -54,9 +54,8 @@ class MapV extends State<MapsDemo> {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-        appBar: AppBar(title: Text('Map View'), backgroundColor: Colors.green[700],),
-
-        body: GoogleMap(
+        appBar: AppBar(title: Text('Hidden Gems')),
+        body: userLocation == null ? Container() : GoogleMap(
           onMapCreated: (GoogleMapController controller) {
             initState();
             mapController = controller;
