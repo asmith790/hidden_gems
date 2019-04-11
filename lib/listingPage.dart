@@ -119,7 +119,7 @@ class ListingPageState extends State<ListingPage> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      new MaterialPageRoute(builder: (context) => new PostView(id: posts[index].id, username: widget.username)),
+                      new MaterialPageRoute(builder: (context) => new PostView(id: posts[index].id, username: widget.username, distance: posts[index].distance,)),
                     );
                   },
                 ),

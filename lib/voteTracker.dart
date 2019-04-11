@@ -153,7 +153,7 @@ class _VoteTrackerState extends State<VoteTracker> {
           children: <Widget>[
             Column(
               children: <Widget>[
-                _thumbsDown()
+                _thumbsUp()
               ],
             ),
             Text(
@@ -166,7 +166,7 @@ class _VoteTrackerState extends State<VoteTracker> {
             ),
             Column(
               children: <Widget>[
-                _thumbsUp()
+                _thumbsDown()
               ],
             ),
           ],
