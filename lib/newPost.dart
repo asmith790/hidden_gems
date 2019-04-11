@@ -143,12 +143,21 @@ class NewPost extends State<CustomForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      appBar: AppBar(title: Text('Add a New Gem!')),
+      appBar: AppBar(title: Text('Hidden Gems')),
       body: Container(
         margin: EdgeInsets.all(15.0),
         alignment: Alignment.center,
         child: Column(
           children: <Widget>[
+            Padding(
+              padding: EdgeInsets.fromLTRB(25.0,10,25,25),
+              child: Text("Add a Hidden Gem!",
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),),
+            ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
@@ -171,27 +180,39 @@ class NewPost extends State<CustomForm> {
               padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
                 controller: _tagsController,
-                decoration: InputDecoration(labelText: 'Tags'),
+                decoration: InputDecoration(labelText: 'Tags',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.add),
+                  color: Colors.blue,
+                  onPressed: () {
+                    tags.add(_tagsController.text);
+                    this.setState(() {
+                      _tagsController.clear();
+                    });
+                  },
+                )),
               ),
               ),
+//            Padding(
+//              padding: EdgeInsets.symmetric(vertical: 10.0),
+//              child: RaisedButton(
+//                  color: Colors.blue,
+//                  textColor: Colors.white,
+//                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+//                  onPressed: (){
+//                  tags.add(_tagsController.text);
+//                  this.setState(() {
+//                    _tagsController.clear();
+//                  });
+//                },
+//                //tooltip: 'Add tag',
+//                child: new Icon(Icons.add)
+//              ),
+//            ),
+            //TODO: change how tags are displayed
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0),
-              child: RaisedButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                  onPressed: (){
-                  tags.add(_tagsController.text);
-                  this.setState(() {
-                    _tagsController.clear();
-                  });
-                },
-                //tooltip: 'Add tag',
-                child: new Icon(Icons.add)
-              ),
-            ),
-            //TODO: change how tags are displayed
-            Text(
+            child: Text(
               _displayTags(),
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
@@ -200,6 +221,7 @@ class NewPost extends State<CustomForm> {
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
               ),
+            ),
             ),
             Row(
                 children: <Widget>[

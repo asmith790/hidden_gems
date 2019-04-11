@@ -7,8 +7,9 @@ import 'voteTracker.dart';
 class PostView extends StatefulWidget {
   final String username;
   final String id;
+  final double distance;
 
-  PostView({this.id, Key key, this.username}) : super(key: key);
+  PostView({this.id, Key key, this.username, this.distance}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => new _PostView();
@@ -31,8 +32,7 @@ class _PostView extends State<PostView> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(title: Text('Hidden Gems')),
-      body: SingleChildScrollView(
-        child: Column(
+      body: Column(
         children: <Widget>[
           StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance
@@ -84,9 +84,7 @@ class _PostView extends State<PostView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
-                          //TODO: Add this
-                          Text('Distance'),
-
+                          widget.distance!= null ? widget.distance == 1 ?  Text(widget.distance.toStringAsFixed(1)+ " mile away") : Text(widget.distance.toStringAsFixed(1)+ " miles away") : Container(),
                         ],
                       ),
                       Row(
@@ -156,7 +154,6 @@ class _PostView extends State<PostView> {
             },
           ),
         ],
-      ),
       ),
     );
   }
