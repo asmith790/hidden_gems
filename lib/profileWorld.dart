@@ -126,7 +126,7 @@ class _ProfileWorld extends State<ProfileWorld> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID)),
+                              new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID, username: _username)),
                             );
                           },
                         );
