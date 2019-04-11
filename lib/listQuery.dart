@@ -6,6 +6,8 @@ import 'post.dart';
 import 'listingPage.dart';
 
 class ListQuery extends StatefulWidget {
+  final String username;
+  ListQuery({Key key, this.username}) : super(key: key);
 
   @override
   State createState() => new ListQueryState();
@@ -66,7 +68,7 @@ class ListQueryState extends State<ListQuery> {
                 }
               }},
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(value: widget.username),
     );
   }
 
@@ -101,7 +103,7 @@ class ListQueryState extends State<ListQuery> {
             return new Text('${snapshot.error}');
           }else{
             posts.sort((a,b) => a.distance.round() - b.distance.round());
-            return ListingPage(posts: posts);
+            return ListingPage(posts: posts, username: widget.username,);
           }
         }
       },

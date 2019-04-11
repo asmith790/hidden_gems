@@ -6,6 +6,7 @@ import 'loginPage.dart';
 import 'profile.dart';
 import 'listQuery.dart';
 import 'mapview.dart';
+import 'newPost.dart';
 
 
 class StartApp extends StatelessWidget {
@@ -24,7 +25,7 @@ class StartApp extends StatelessWidget {
           '/profile' :(_) => new Profile(),
           '/listings': (_) => new ListQuery(),
           '/maps' : (_) => new MapsDemo(),
-          //TODO: add all the other routes here
+          '/post' : (_) => new CustomForm(),
         },
       )
     );

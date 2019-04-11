@@ -113,19 +113,19 @@ class _Profile extends State<Profile> {
               if(snapshot.hasError){
                 return new Text('${snapshot.error}');
               }else{
-                return _buildPage();
+                return _buildPage(context);
               }
             }
           }
         )
       ),
-      drawer: MyDrawer(),
+      drawer: MyDrawer(value: _username),
     );
   }
 
   /// Widget that creates the whole page after fetches information
-  Widget _buildPage(){
-    return Column(
+  Widget _buildPage(BuildContext context){
+    return Scrollbar( child: Column(
       children: <Widget>[
         // top portion
         _simplePadding(),
@@ -168,13 +168,13 @@ class _Profile extends State<Profile> {
               default:
                 return ListView(
                   shrinkWrap: true,
-                  children: snapshot.data.documents.map((DocumentSnapshot doc){
+                  children: ListTile.divideTiles(
+                    context: context,
+                    tiles: snapshot.data.documents.map((DocumentSnapshot doc){
                     for(int i = 0; i < doc.data['name'].length; i++){
                       String curr = doc.data['name'];
                       /// details about gems the user has posted
-                      return Column(
-                        children: <Widget>[
-                          ListTile(
+                      return ListTile(
                             leading: getPicture(doc.data['picture']),
                             title: _titleGems(doc),
                             subtitle: _descGems(doc),
@@ -195,7 +195,6 @@ class _Profile extends State<Profile> {
                                           child: Text("Delete"),
                                           textColor: Colors.pinkAccent,
                                           onPressed: (){
-                                            // TODO: finish the deleting gem part
                                             bool err = _deleteGem(doc.documentID);
                                             if(err){
                                               Fluttertoast.showToast(
@@ -228,22 +227,24 @@ class _Profile extends State<Profile> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID)),
+                                new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID, username: _username,)),
                               );
                             },
-                          ),
-                          _divider(),
-                        ],
                       );
                     }
-                  }).toList(),
+                  }),
+                ).toList(),
                 );
             }
           },
         ),
         _simplePadding(),
         _editButton(),
+        Padding(
+            padding: EdgeInsets.only(bottom: 25)
+        )
       ],
+    )
     );
   }
 
@@ -404,25 +405,6 @@ class _Profile extends State<Profile> {
     );
   }
 
-
-  // TODO: don't need but save to use on Post page - use in other profile page for world viewing
-  Icon _thumbs(DocumentSnapshot doc){
-    int rating = doc.data['rating'];
-    if(rating < 0){
-      return Icon(
-        Icons.thumb_down,
-        color: Colors.blue,
-        size: 20.0,
-      );
-    }else{
-      return Icon(
-        Icons.thumb_up,
-        color: Colors.blue,
-        size: 20.0,
-      );
-    }
-  }
-
   Text _titleGems(DocumentSnapshot doc){
     return Text(
       doc.data['name'],
@@ -444,18 +426,5 @@ class _Profile extends State<Profile> {
       ),
     );
   }
-
-  // TODO: don't need this - but use in other profile page for world viewing
-  Text _rateGems(DocumentSnapshot doc){
-    return Text(
-      doc.data['rating'].toString(),
-      style: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.w500,
-          color: Colors.black38
-      ),
-    );
-  }
-
 
 }
