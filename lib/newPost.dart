@@ -233,7 +233,6 @@ class NewPost extends State<CustomForm> {
                     onPressed: removeImage,
                     child: new Icon(
                         Icons.cancel, color: Color.fromRGBO(255, 0, 0, 1)),
-                    //color: Color.fromRGBO(0, 0, 0, 0),
                   ) : SizedBox(),
 
                 ]),
