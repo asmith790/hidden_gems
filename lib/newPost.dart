@@ -18,7 +18,6 @@ class ShowHideTextField extends StatefulWidget {
   }
 }
 
-
 class CustomForm extends StatefulWidget {
   final String username;
   CustomForm({Key key, this.username}) : super(key: key);
@@ -28,6 +27,7 @@ class CustomForm extends StatefulWidget {
 }
 class NewPost extends State<CustomForm> {
   @override
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _tagsController = TextEditingController();
@@ -147,6 +147,9 @@ class NewPost extends State<CustomForm> {
       body: Container(
         margin: EdgeInsets.all(15.0),
         alignment: Alignment.center,
+        child: Builder(
+          builder: (context) => Form(
+          key: _formKey,
         child: Column(
           children: <Widget>[
             Padding(
@@ -160,7 +163,12 @@ class NewPost extends State<CustomForm> {
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                },
                 controller: _nameController,
                 maxLength: 20,
                 decoration: InputDecoration(labelText: 'Name'),
@@ -169,7 +177,12 @@ class NewPost extends State<CustomForm> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a description';
+                  }
+                },
                 controller: _descriptionController,
                 maxLength: 35,
                 decoration: InputDecoration(labelText: 'Description'),
@@ -178,7 +191,7 @@ class NewPost extends State<CustomForm> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
                 controller: _tagsController,
                 decoration: InputDecoration(labelText: 'Tags',
                 suffixIcon: IconButton(
@@ -280,14 +293,17 @@ class NewPost extends State<CustomForm> {
                   borderRadius: new BorderRadius.circular(2.0)
               ),
               onPressed: () {
-                //TODO: name and description can't be empty to be allowed to submit
-                locateUser().then((value) {
-                  setState(() {
-                    userLocation = value;
-                  });
-                  finished = true;
-                  uploadGem();
-                }).catchError((){
+                final form = _formKey.currentState;
+                if (form.validate()) {
+                  form.save();
+                  //TODO: name and description can't be empty to be allowed to submit
+                  locateUser().then((value) {
+                    setState(() {
+                      userLocation = value;
+                    });
+                    finished = true;
+                    uploadGem();
+                }).catchError(() {
                   Fluttertoast.showToast(
                       msg: "Error: could not add gem",
                       toastLength: Toast.LENGTH_SHORT,
@@ -298,12 +314,16 @@ class NewPost extends State<CustomForm> {
                       fontSize: 16.0
                   );
                 });
+              }
               },
+              )
+              ],
             ),
-          ],
         ),
-      ),
-      drawer: MyDrawer(value: _username),
+
+    ),
+    ),
+        drawer: MyDrawer(value: _username),
     );
   }
 }
