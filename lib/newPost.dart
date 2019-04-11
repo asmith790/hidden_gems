@@ -141,12 +141,14 @@ class NewPost extends State<CustomForm> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _formKey,
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(title: Text('Add a New Gem!')),
       body: Container(
         margin: EdgeInsets.all(15.0),
         alignment: Alignment.center,
+        child: Builder(
+          builder: (context) => Form(
+          key: _formKey,
         child: Column(
           children: <Widget>[
             Padding(
@@ -154,7 +156,7 @@ class NewPost extends State<CustomForm> {
               child: TextFormField(
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Please enter some text';
+                    return 'Please enter a name';
                   }
                 },
                 controller: _nameController,
@@ -168,7 +170,7 @@ class NewPost extends State<CustomForm> {
               child: TextFormField(
                 validator: (value) {
                   if (value.isEmpty) {
-                    return 'Please enter some text';
+                    return 'Please enter a description';
                   }
                 },
                 controller: _descriptionController,
@@ -271,6 +273,9 @@ class NewPost extends State<CustomForm> {
                   borderRadius: new BorderRadius.circular(2.0)
               ),
               onPressed: () {
+                final form = _formKey.currentState;
+              if (form.validate()) {
+                form.save();
                 //TODO: name and description can't be empty to be allowed to submit
                 locateUser().then((value) {
                   setState(() {
@@ -278,7 +283,7 @@ class NewPost extends State<CustomForm> {
                   });
                   finished = true;
                   uploadGem();
-                }).catchError((){
+                }).catchError(() {
                   Fluttertoast.showToast(
                       msg: "Error: could not add gem",
                       toastLength: Toast.LENGTH_SHORT,
@@ -289,12 +294,16 @@ class NewPost extends State<CustomForm> {
                       fontSize: 16.0
                   );
                 });
+              }
               },
               )
               ],
             ),
         ),
-      drawer: MyDrawer(value: _username),
+
+    ),
+    ),
+        drawer: MyDrawer(value: _username),
     );
   }
 }
