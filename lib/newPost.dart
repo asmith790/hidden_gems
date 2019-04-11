@@ -274,15 +274,15 @@ class NewPost extends State<CustomForm> {
               ),
               onPressed: () {
                 final form = _formKey.currentState;
-              if (form.validate()) {
-                form.save();
-                //TODO: name and description can't be empty to be allowed to submit
-                locateUser().then((value) {
-                  setState(() {
-                    userLocation = value;
-                  });
-                  finished = true;
-                  uploadGem();
+                if (form.validate()) {
+                  form.save();
+                  //TODO: name and description can't be empty to be allowed to submit
+                  locateUser().then((value) {
+                    setState(() {
+                      userLocation = value;
+                    });
+                    finished = true;
+                    uploadGem();
                 }).catchError(() {
                   Fluttertoast.showToast(
                       msg: "Error: could not add gem",
