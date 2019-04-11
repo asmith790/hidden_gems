@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hidden_gems/editPost.dart';
 import 'navBar.dart';
 import 'postView.dart';
 import 'auth.dart';
@@ -176,7 +177,22 @@ class _Profile extends State<Profile> {
                       /// details about gems the user has posted
                       return ListTile(
                             leading: getPicture(doc.data['picture']),
-                            title: _titleGems(doc),
+                            title: Row(
+                                children: <Widget> [
+                                  _titleGems(doc),
+                                  IconButton(
+                                    icon: Icon(Icons.edit),
+                                    color: Colors.lightBlue,
+                                    onPressed: () {
+                                      //TODO go to edit post page
+                                      Navigator.push(
+                                        context,
+                                        new MaterialPageRoute(builder: (context) => new EditPost(id: doc.documentID, username: _username,)),
+                                      );
+                                    },
+                                  )
+                                ]
+                            ),
                             subtitle: _descGems(doc),
                             trailing: IconButton(
                               icon: Icon(Icons.delete),
@@ -402,6 +418,7 @@ class _Profile extends State<Profile> {
       //Would become a photo
       url,
       width: 76.0,
+      height: 45,
     );
   }
 
