@@ -90,7 +90,6 @@ class NewPost extends State<CustomForm> {
           'longitude': userLocation.longitude,
           'picture': imgUrl,
           'tags': tags,
-          //TODO: chane auser to current user
           'userid': _username,
         },
       );

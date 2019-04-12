@@ -28,6 +28,10 @@ class _Profile extends State<Profile> {
   String _picture = ' ';
   int _rating = 0;
 
+  int totalPosts = 0;
+  int totalRatings = 0;
+  int _newRating = -1;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -75,6 +79,35 @@ class _Profile extends State<Profile> {
         }
     );
     return false;
+  }
+
+  /// determines user rating
+  Widget _userRating(){
+    if(totalPosts == 0){
+      _newRating = 0;
+    }else if(totalPosts > 3 && totalRatings > 20){
+      _newRating = 5;
+    }else if((totalPosts > 3 && totalRatings > 10) || (totalPosts < 3 && totalRatings > 15)){
+      _newRating = 4;
+    }else if((totalPosts > 3 && totalRatings > 5) || (totalPosts < 3 && totalRatings > 0)){
+      _newRating = 3;
+    }else if(totalRatings > -5){
+      _newRating = 2;
+    }else{
+      _newRating = 1;
+    }
+    _updateRating(_newRating);
+    return Container(width: 0.0, height: 0.0,);
+  }
+
+  /// update database with new rating
+  _updateRating(int newRating) {
+      var batch = Firestore.instance.batch();
+      var currUser = Firestore.instance.collection('users').document(_userId);
+      batch.updateData(currUser, {
+        'rating': newRating
+      });
+      batch.commit();
   }
 
 
@@ -146,7 +179,6 @@ class _Profile extends State<Profile> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10)
                     ),
-                    //TODO: add rating here
                     _buildRating(_rating),
                   ],
                 ),
@@ -173,6 +205,9 @@ class _Profile extends State<Profile> {
                     context: context,
                     tiles: snapshot.data.documents.map((DocumentSnapshot doc){
                     for(int i = 0; i < doc.data['name'].length; i++){
+                      totalPosts++;
+                      totalRatings += doc.data['rating'];
+
                       String curr = doc.data['name'];
                       /// details about gems the user has posted
                       return ListTile(
@@ -184,7 +219,6 @@ class _Profile extends State<Profile> {
                                     icon: Icon(Icons.edit),
                                     color: Colors.lightBlue,
                                     onPressed: () {
-                                      //TODO go to edit post page
                                       Navigator.push(
                                         context,
                                         new MaterialPageRoute(builder: (context) => new EditPost(id: doc.documentID, username: _username)),
@@ -256,6 +290,7 @@ class _Profile extends State<Profile> {
         ),
         _simplePadding(),
         _editButton(),
+        _userRating(),
         Padding(
             padding: EdgeInsets.only(bottom: 25)
         )
