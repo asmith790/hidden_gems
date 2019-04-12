@@ -226,7 +226,6 @@ class NewPost extends State<CustomForm> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
-                //TODO: change so it is the current user logged in username
                 controller: _useridController,
                 decoration: InputDecoration(labelText: 'UserId'),
               ),
@@ -258,7 +257,6 @@ class NewPost extends State<CustomForm> {
                   borderRadius: new BorderRadius.circular(2.0)
               ),
               onPressed: () {
-                //TODO: name and description can't be empty to be allowed to submit
                 locateUser().then((value) {
                   setState(() {
                     userLocation = value;

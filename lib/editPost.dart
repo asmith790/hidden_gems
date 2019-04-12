@@ -26,6 +26,7 @@ class _EditPost extends State<EditPost> {
   String _postDescription; // user can edit
   String _postPicture; // user can edit
   List <dynamic> _postTags = new List(); // user can edit
+//  List <dynamic> _newTagList = new List();
 
   File _image;
   var uuid = new Uuid();
@@ -34,6 +35,7 @@ class _EditPost extends State<EditPost> {
 
   TextEditingController _descriptionController;
   final _pictureController = TextEditingController();
+//  final _tagsController = TextEditingController();
 
 
   @override
@@ -49,6 +51,7 @@ class _EditPost extends State<EditPost> {
     // Clean up the controller when the Widget is removed from the Widget tree
     _descriptionController.dispose();
     _pictureController.dispose();
+//    _tagsController.dispose();
     super.dispose();
   }
 
@@ -81,7 +84,7 @@ class _EditPost extends State<EditPost> {
     batch.updateData(currUser, {
       'description':  _descriptionController.text,
       'picture': imgUrl,
-      //TODO: update the new tags list
+//      'tags': _newTagList,
     });
     batch.commit().then((val) {
       print(_postDescription);
@@ -111,17 +114,26 @@ class _EditPost extends State<EditPost> {
     });
   }
 
-  /// Display all tags already in the database
-  String _displayTags(){
-    String temp = 'Tags: \n';
-    for(int i = 0; i < _postTags.length; i++){
-      if(i%5 == 0){
-        temp = temp + '\n';
-      }
-      temp = temp + '  ' + _postTags[i];
-    }
-    return temp;
-  }
+//  String _value = '';
+
+//  /// Display all tags already in the database
+//  String _displayTags(){
+//    String temp = 'Tags: \n';
+//    for(int i = 0; i < _newTagList.length; i++){
+//      if(i%5 == 0){
+//        temp = temp + '\n';
+//      }
+//      temp = temp + '  ' + _newTagList[i];
+//    }
+//    return temp;
+//  }
+//
+//  _onAddition() {
+//    setState((){
+//      _value = '';
+//      _value = _displayTags();
+//    });
+//  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,7 +149,15 @@ class _EditPost extends State<EditPost> {
                   _postPicture = doc.data['picture'];
                   _postTags = doc.data['tags'];
                   _descriptionController = TextEditingController(text: doc.data['description']);
-                  print(_postTags);
+//                  print(_newTagList);
+//                  for(int i = _newTagList.length-1; i >= 0; i--){
+//                    _newTagList.removeAt(i);
+//                  }
+//                  print(_newTagList);
+//                  for(int i = 0; i < _postTags.length; i++){
+//                    _newTagList.add(_postTags[i]);
+//                  }
+//                  print(_newTagList);
                 }
               }),
               builder: (context, snapshot) {
@@ -187,33 +207,36 @@ class _EditPost extends State<EditPost> {
 //              Padding(
 //                padding: EdgeInsets.symmetric(horizontal: 25.0),
 //                child: TextFormField(
-////                  controller: _tagsController,
+//                  controller: _tagsController,
+//                  autofocus: true,
 //                  decoration: InputDecoration(labelText: 'Tags',
 //                      suffixIcon: IconButton(
 //                        icon: Icon(Icons.add),
 //                        color: Colors.blue,
 //                        onPressed: () {
-////                          _postTags.add(_tagsController.text);
-////                          this.setState(() {
-////                            _tagsController.clear();
-////                          });
-////                          },
-//                        )),
+//                          print(_newTagList);
+//                          _newTagList.add(_tagsController.text);
+//                          print(_newTagList);
+//                          _tagsController.text = '';
+//                          _onAddition();
+//                          },
+//                        )
+//                      ),
 //                  ),
 //                ),
-              Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                  child: Text(
-                    _displayTags(),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
+//              Padding(
+//                  padding: EdgeInsets.symmetric(vertical: 10.0),
+//                  child: Text(
+//                    _value,
+//                    textAlign: TextAlign.center,
+//                    overflow: TextOverflow.ellipsis,
+//                    style: TextStyle(
+//                      fontFamily: 'Roboto',
+//                      fontWeight: FontWeight.w500,
+//                      fontSize: 15,
+//                    ),
+//                  ),
+//                ),
               Row(
                   children: <Widget>[
                     Padding(
