@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'post.dart';
 
-//I think the counter alone needs to be in a stateful widget and that is in a
-//parent widget with the other stuff that is stateless. So only the counter changes.
 class VoteTracker extends StatefulWidget {
   final int count;
   final String postId;
@@ -35,7 +32,6 @@ class _VoteTrackerState extends State<VoteTracker> {
 
     setState(() {
       _counter++;
-      //update database
     });
   }
 
@@ -44,7 +40,6 @@ class _VoteTrackerState extends State<VoteTracker> {
     
     setState(() {
       _counter--;
-      //update database
     });
   }
 
@@ -53,10 +48,11 @@ class _VoteTrackerState extends State<VoteTracker> {
   }
 
   Widget _thumbsUp(){
+    //Never Votes
     if(_currentVote == 2) {
       return IconButton(
         icon: Icon(Icons.thumb_up),
-        color: Colors.blue,
+        color: Colors.grey,
         iconSize: 40.0,
         onPressed: () {
           increment(_postId);
@@ -64,11 +60,11 @@ class _VoteTrackerState extends State<VoteTracker> {
           changeCurrVote();
         },
       );
-    }else if(_currentVote == 1) {
+    }else if(_currentVote == 1) { //Thumbs up
       //darken thumbs up button if voted thumbs up already
       return IconButton(
         icon: Icon(Icons.thumb_up),
-        color: Colors.grey,
+        color: Colors.blue,
         iconSize: 40.0,
         onPressed: () {
           decrement(_postId);
@@ -80,7 +76,7 @@ class _VoteTrackerState extends State<VoteTracker> {
       //disable thumbs up button for own post
       return IconButton(
         icon: Icon(Icons.thumb_up),
-        color: Colors.blue,
+        color: Colors.grey,
         iconSize: 40.0,
         onPressed: null,
       );
@@ -88,7 +84,7 @@ class _VoteTrackerState extends State<VoteTracker> {
       // can thumbs up , change currentVal = 1
       return IconButton(
         icon: Icon(Icons.thumb_up),
-        color: Colors.blue,
+        color: Colors.grey,
         iconSize: 40.0,
         onPressed: () {
           increment(_postId);
@@ -104,7 +100,7 @@ class _VoteTrackerState extends State<VoteTracker> {
     if(_currentVote == 2){
       return IconButton(
         icon: Icon(Icons.thumb_down),
-        color: Colors.blue,
+        color: Colors.grey,
         iconSize: 40.0,
         onPressed: () {
           decrement(_postId);
@@ -113,10 +109,10 @@ class _VoteTrackerState extends State<VoteTracker> {
         },
       );
     } else if(_currentVote == 0){
-      //disable thumbs down button for him
+      //Already pushed
       return IconButton(
         icon: Icon(Icons.thumb_down),
-        color: Colors.grey,
+        color: Colors.blue,
         iconSize: 40.0,
         onPressed: () {
           increment(_postId);
@@ -128,7 +124,7 @@ class _VoteTrackerState extends State<VoteTracker> {
       //disable thumbs down button for own post
       return IconButton(
         icon: Icon(Icons.thumb_down),
-        color: Colors.blue,
+        color: Colors.grey,
         iconSize: 40.0,
         onPressed: null,
       );
@@ -136,12 +132,12 @@ class _VoteTrackerState extends State<VoteTracker> {
       // can thumbs down , change currentVal = 0 for user
       return IconButton(
         icon: Icon(Icons.thumb_down),
-        color: Colors.blue,
+        color: Colors.grey,
         iconSize: 40.0,
         onPressed: () {
           decrement(_postId);
           decrement(_postId);
-          _currentVote = 0;
+          _currentVote = 2;
           changeCurrVote();
         },
       );
@@ -157,7 +153,7 @@ class _VoteTrackerState extends State<VoteTracker> {
           children: <Widget>[
             Column(
               children: <Widget>[
-                _thumbsDown()
+                _thumbsUp()
               ],
             ),
             Text(
@@ -170,7 +166,7 @@ class _VoteTrackerState extends State<VoteTracker> {
             ),
             Column(
               children: <Widget>[
-                _thumbsUp()
+                _thumbsDown()
               ],
             ),
           ],

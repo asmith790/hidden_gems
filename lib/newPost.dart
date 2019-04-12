@@ -18,7 +18,6 @@ class ShowHideTextField extends StatefulWidget {
   }
 }
 
-
 class CustomForm extends StatefulWidget {
   final String username;
   CustomForm({Key key, this.username}) : super(key: key);
@@ -28,6 +27,7 @@ class CustomForm extends StatefulWidget {
 }
 class NewPost extends State<CustomForm> {
   @override
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _tagsController = TextEditingController();
@@ -143,15 +143,32 @@ class NewPost extends State<CustomForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      appBar: AppBar(title: Text('Add a New Gem!')),
+      appBar: AppBar(title: Text('Hidden Gems')),
       body: Container(
         margin: EdgeInsets.all(15.0),
         alignment: Alignment.center,
+        child: Builder(
+          builder: (context) => Form(
+          key: _formKey,
         child: Column(
           children: <Widget>[
             Padding(
+              padding: EdgeInsets.fromLTRB(25.0,10,25,25),
+              child: Text("Add a Hidden Gem!",
+                style: TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),),
+            ),
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                },
                 controller: _nameController,
                 maxLength: 20,
                 decoration: InputDecoration(labelText: 'Name'),
@@ -160,7 +177,12 @@ class NewPost extends State<CustomForm> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a description';
+                  }
+                },
                 controller: _descriptionController,
                 maxLength: 35,
                 decoration: InputDecoration(labelText: 'Description'),
@@ -169,29 +191,41 @@ class NewPost extends State<CustomForm> {
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
-              child: TextField(
+              child: TextFormField(
                 controller: _tagsController,
-                decoration: InputDecoration(labelText: 'Tags'),
+                decoration: InputDecoration(labelText: 'Tags',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.add),
+                  color: Colors.blue,
+                  onPressed: () {
+                    tags.add(_tagsController.text);
+                    this.setState(() {
+                      _tagsController.clear();
+                    });
+                  },
+                )),
               ),
               ),
+//            Padding(
+//              padding: EdgeInsets.symmetric(vertical: 10.0),
+//              child: RaisedButton(
+//                  color: Colors.blue,
+//                  textColor: Colors.white,
+//                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+//                  onPressed: (){
+//                  tags.add(_tagsController.text);
+//                  this.setState(() {
+//                    _tagsController.clear();
+//                  });
+//                },
+//                //tooltip: 'Add tag',
+//                child: new Icon(Icons.add)
+//              ),
+//            ),
+            //TODO: change how tags are displayed
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0),
-              child: RaisedButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                  onPressed: (){
-                  tags.add(_tagsController.text);
-                  this.setState(() {
-                    _tagsController.clear();
-                  });
-                },
-                //tooltip: 'Add tag',
-                child: new Icon(Icons.add)
-              ),
-            ),
-            //TODO: change how tags are displayed
-            Text(
+            child: Text(
               _displayTags(),
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
@@ -200,6 +234,7 @@ class NewPost extends State<CustomForm> {
                   fontWeight: FontWeight.w500,
                   fontSize: 15,
               ),
+            ),
             ),
             Row(
                 children: <Widget>[
@@ -257,29 +292,35 @@ class NewPost extends State<CustomForm> {
                   borderRadius: new BorderRadius.circular(2.0)
               ),
               onPressed: () {
-                locateUser().then((value) {
-                  setState(() {
-                    userLocation = value;
-                  });
-                  finished = true;
-                  uploadGem();
-                }).catchError((){
-                  Fluttertoast.showToast(
-                      msg: "Error: could not add gem",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIos: 2,
-                      backgroundColor: Colors.black54,
-                      textColor: Colors.white,
-                      fontSize: 16.0
-                  );
-                });
+                final form = _formKey.currentState;
+                if (form.validate()) {
+                  form.save();
+                  locateUser().then((value) {
+                    setState(() {
+                      userLocation = value;
+                    });
+                    finished = true;
+                    uploadGem();
+                  }).catchError(() {
+                    Fluttertoast.showToast(
+                        msg: "Error: could not add gem",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIos: 2,
+                        backgroundColor: Colors.black54,
+                        textColor: Colors.white,
+                        fontSize: 16.0
+                    );
+                  });              }
               },
+              )
+              ],
             ),
-          ],
         ),
-      ),
-      drawer: MyDrawer(value: _username),
+
+    ),
+    ),
+        drawer: MyDrawer(value: _username),
     );
   }
 }
