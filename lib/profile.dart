@@ -187,7 +187,7 @@ class _Profile extends State<Profile> {
                                       //TODO go to edit post page
                                       Navigator.push(
                                         context,
-                                        new MaterialPageRoute(builder: (context) => new EditPost(id: doc.documentID, username: _username,)),
+                                        new MaterialPageRoute(builder: (context) => new EditPost(id: doc.documentID, username: _username)),
                                       );
                                     },
                                   )
