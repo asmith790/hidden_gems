@@ -16,11 +16,16 @@ class ProfileWorld extends StatefulWidget {
 
 class _ProfileWorld extends State<ProfileWorld> {
   String _email = ' ';
+  String _userId = ' ';
   String _username = ' ';
   String _name = ' ';
   String _bio = ' ';
   String _picture = ' ';
   int _rating = 0;
+
+  int totalPosts = 0;
+  int totalRatings = 0;
+  int _newRating = -1;
 
   @override
   void didChangeDependencies() {
@@ -28,6 +33,7 @@ class _ProfileWorld extends State<ProfileWorld> {
     _username = widget.username;
     print('Username: $_username');
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +60,7 @@ class _ProfileWorld extends State<ProfileWorld> {
 
   Widget _setUp(AsyncSnapshot<QuerySnapshot> snapshot){
     snapshot.data.documents.map((DocumentSnapshot doc) {
+      _userId = doc.documentID;
       _email = doc.data['email'];
       _username = doc.data['username'];
       _name = doc.data['name'];
@@ -88,7 +95,6 @@ class _ProfileWorld extends State<ProfileWorld> {
                     Padding(
                         padding: EdgeInsets.only(bottom: 10)
                     ),
-                    //TODO: add rating here
                     _buildRating(_rating),
                   ],
                 ),
@@ -115,6 +121,9 @@ class _ProfileWorld extends State<ProfileWorld> {
                     context: context,
                     tiles: snapshot.data.documents.map((DocumentSnapshot doc){
                       for(int i = 0; i < doc.data['name'].length; i++){
+                        totalPosts++;
+                        totalRatings += doc.data['rating'];
+
                         String curr = doc.data['name'];
                         print(curr);
                         /// details about gems the user has posted
@@ -123,12 +132,12 @@ class _ProfileWorld extends State<ProfileWorld> {
                           title: _titleGems(doc),
                           subtitle: _descGems(doc),
                           isThreeLine: true,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              new MaterialPageRoute(builder: (context) => new PostView(id: doc.documentID, username: _username)),
-                            );
-                          },
+//                          onTap: () {
+//                            Navigator.push(
+//                              context,
+//                              new MaterialPageRoute(builder: (context) => new PostView(id: _userId, username: _username)),
+//                            );
+//                          },
                         );
                       }
                     }),
