@@ -5,13 +5,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.1'
+        // Flutter is currently compatible with version 3.2.1 of the Google Services plugin.
+        classpath 'com.android.tools.build:gradle:3.3.2'
+        classpath 'com.google.gms:google-services:4.2.0'  // Google Services plugin
     }
 }
 
 allprojects {
     repositories {
-        google()
+        google() // Google's Maven repository
         jcenter()
     }
 }
