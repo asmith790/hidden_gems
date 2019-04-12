@@ -261,7 +261,6 @@ class NewPost extends State<CustomForm> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 25.0),
               child: TextField(
-                //TODO: change so it is the current user logged in username
                 controller: _useridController,
                 decoration: InputDecoration(labelText: 'UserId'),
               ),
@@ -296,25 +295,23 @@ class NewPost extends State<CustomForm> {
                 final form = _formKey.currentState;
                 if (form.validate()) {
                   form.save();
-                  //TODO: name and description can't be empty to be allowed to submit
                   locateUser().then((value) {
                     setState(() {
                       userLocation = value;
                     });
                     finished = true;
                     uploadGem();
-                }).catchError(() {
-                  Fluttertoast.showToast(
-                      msg: "Error: could not add gem",
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIos: 2,
-                      backgroundColor: Colors.black54,
-                      textColor: Colors.white,
-                      fontSize: 16.0
-                  );
-                });
-              }
+                  }).catchError(() {
+                    Fluttertoast.showToast(
+                        msg: "Error: could not add gem",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIos: 2,
+                        backgroundColor: Colors.black54,
+                        textColor: Colors.white,
+                        fontSize: 16.0
+                    );
+                  });              }
               },
               )
               ],
